@@ -2,7 +2,8 @@
 
 Your Python function definition is your web app! 
 
-![How funix works](./figures/snap.png)
+![How funix works](./illustrations/workflow.png)
+
 
 * Simple and quick: Funix turns your Python function into a web app in as few as two lines of code. 
 * For whom: Python engineers who want to bring their code to the web but do not want to bother anything front-end or GUI, not even creating widgets in Python. 
