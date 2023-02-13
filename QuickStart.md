@@ -7,7 +7,7 @@ Your Python function definition is your web app!
 
 ## Introduction
 
-* Funix allows you to build web apps by focusing on your core logic in Python, without bothering about the front-end or web UI.
+* Funix allows you to build web apps directly from your core logic in Python, without bothering with the front-end or web UI.
 * With **as few as two more lines of code**, you can turn any Python function into a web app via Funix.
 * Unlike other Python-based frameworks for building web apps, Funix does not require you to create widgets in Python. **Just focus on your core logic.**
 * But if you need to customize the UI, you can do it declaratively in Python, YAML, or JSON. Themes can also be used to provide consistent UI across your web apps.
@@ -68,23 +68,38 @@ Then the web app will be launched at `http://localhost:3000`.
 
 ## Customizing UI is easy
 
-Although Funix chooses widgets automatically, you can easily customize them. For example, the code ([here](./examples/slider_markdown.py)) below uses a slider, between 0 and 10 with a step of 1, for the integer input and adds a description to the app in Markdown:
+Although Funix chooses widgets automatically, you can easily customize them. For example, the code ([here](./examples/power_slider_radio.py)) below 
+* uses a slider, between 0 and 10 with a step of 1, for the integer input, 
+* adds a help message in Markdown
+* and finally uses a radio button to select between two options. 
 
 ```python
 from funix import funix
 
 @funix(
-    widgets={"x": "slider[0,10,1]"}, 
-    description="**Square** a _number_. Made with [Funix](http://funix.io)"
+    widgets={
+        "x": "slider[0,10,1]",
+        "op": "radio"
+        }, 
+    whitelist={"op": ["square", "cube"]},
+    description="""
+Compute the power of a _number_. 
+Two options: 
+* Choose `op` as `square` to compute the square of `x`.
+* Choose `op` as `cube` to compute the cube of `x`.
+
+Made with [Funix](http://funix.io)
+"""
 )
-def square(x: int) -> int:
-    return x * x
+def power(x: int, op: str) -> int:
+    if op =="square":
+        return x * x
+    elif op == "cube":
+        return x * x * x
 ```
 
 The corresponding web app looks like below:
-![slider square example](./screenshots/slider_square.png)
-
-TODO: More complex Markdown examples.
+![slider power example](./screenshots/power_slider_radio.png)
 
 
 ## Multi-modal and compound I/Os
@@ -114,7 +129,7 @@ The corresponding web app looks like below.
 
 ![table plot demo static](./screenshots/table_plot.png)
 
-We further copied the data from a spreadsheet to the table to show off Funix' ability to function as a step in your data science workflow. [Watch HD video here](https://youtu.be/4vcYZSXoeW0).
+Funix's table input widget supports copy-and-paste from/to a spreadsheet program, as shown in the GIF below. [Watch HD video on YouTube](https://youtu.be/4vcYZSXoeW0).
 
 ![table plot demo gif](./videos/table_plot.gif)
 
@@ -122,21 +137,24 @@ TODO: Change the widget for `b` to `["sheet", "slider[0,1,0.01]"` after bug fixi
 
 ## Themes
 
-Funix supports themes to provide consistent UI across your web apps. The example code below changes all widgets to yellow from the default blue theme:  
+Funix supports themes to provide a consistent UI across your web apps. The example below [code here](examples/theme.py) changes all widgets, including the top banner, to yellow from the default blue theme. Yes, Funix supports importing a theme from any web URL.
 
 ```python
 from funix import funix
 @funix(
-    theme="https://yazawazi.moe/pdf_themes/sunset_v2.yaml"
+    theme = "https://raw.githubusercontent.com/TexteaInc/funix-doc/main/examples/sunset_v2.yaml"
 )
 def hello(your_name: str) -> str:
     return f"Hello, {your_name}."
 ```
 
-TODO: Add a screenshot after bug fixing. 
+The corresponding web app looks like below, where the default blue theme is replaced with the yellow one.
+
+![sunset theme](./screenshots/theme_sunset.png)
 
 ## Customizing layouts
-In Funix, users can use a simple row-based approach to customize the layout. Two parameters are used for layout customization of the inputs and outputs respectively: `input_layout` and `output_layout`. 
+
+Two parameters are used for layout customization of the inputs and outputs respectively: `input_layout` and `output_layout`. 
 Funix uses a row-based layput system. 
 The input or output panel, a 2D list, is divided into rows, each of which is a list of dictionaries, each of which specifies a widget, where the keys are the properties of the widget. For more details, please refer to the Reference Manual. 
 
