@@ -66,36 +66,38 @@ python3 -m funix hello_world -P 3000
 
 Then the web app will be launched at `http://localhost:3000`.
 
-## Customizing UI is easy
+## Customizing UI made easy
 
-Although Funix chooses widgets automatically, you can easily customize them. For example, the code ([here](./examples/power_slider_radio.py)) below 
-* uses a slider, between 0 and 10 with a step of 1, for the integer input, 
-* adds a help message in Markdown
-* and finally uses a radio button to select between two options. 
+Although Funix chooses widgets automatically, you can easily customize them. For example, the code ([here](./examples/power_slider_radio.py)) below uses a slider, between 0 and 10 with a step of 1, for the integer input `x` and uses a radio button to select the string input `op`. 
+The return is a string but because its type is `funix.hint.Markdown`, it is rendered into rich text in the web app. 
+
+This example also leverages Funix's JSON5 support to facilitate declarative UI customization. 
+See more in the section [JSON5 and YAML support](#declarative-in-json5-and-yaml) below. 
 
 ```python
-from funix import funix
-
-@funix(
-    widgets={
-        "x": "slider[0,10,1]",
-        "op": "radio"
-        }, 
-    whitelist={"op": ["square", "cube"]},
-    description="""
-Compute the power of a _number_. 
-Two options: 
-* Choose `op` as `square` to compute the square of `x`.
-* Choose `op` as `cube` to compute the cube of `x`.
-
-Made with [Funix](http://funix.io)
+from funix.hint import Markdown
+from funix import funix_json5
+@funix_json5("""
+{
+    widgets: {
+        x: "slider[0,10,1]",
+        op: "radio" } , 
+    whitelist: {
+        op: ["square", "cube"] } 
+}
 """
 )
-def power(x: int, op: str) -> int:
+
+def power(x: int, op: str) -> Markdown:
     if op =="square":
-        return x * x
+        return  f"\
+* The _square_ of {x} is **{x * x}**. \n \
+* Made by [Funix](http://funix.io)"
     elif op == "cube":
-        return x * x * x
+        # return x * x * x
+        return  f"\
+* The _cube_ of {x} is **{x * x * x}**. \n \
+* Made by [Funix](http://funix.io)"
 ```
 
 The corresponding web app looks like below:
@@ -106,6 +108,8 @@ The corresponding web app looks like below:
 
 Funix can support more than singular I/Os such as integers or strings.
 The example below ([code here](./examples/slider_table_plot.py)) creates a table input and visualizes the two columns in a scatter plot. 
+In particular, the widget for variable `a` is a column of input boxes while that for the variable `b` is a column of sliders. 
+
 
 ```python 
 from typing import List 
@@ -116,7 +120,7 @@ from funix import funix
 @funix(
     widgets={
         "a": "sheet",
-        "b": "sheet",
+        "b": ["sheet", "slider[0,1,0.01]"],
     }
 )
 def table_plot(a: List[int], b: List[float]) -> plt.figure:
@@ -132,8 +136,6 @@ The corresponding web app looks like below.
 Funix's table input widget supports copy-and-paste from/to a spreadsheet program, as shown in the GIF below. [Watch HD video on YouTube](https://youtu.be/4vcYZSXoeW0).
 
 ![table plot demo gif](./videos/table_plot.gif)
-
-TODO: Change the widget for `b` to `["sheet", "slider[0,1,0.01]"` after bug fixing. 
 
 ## Themes
 
@@ -196,19 +198,69 @@ The corresponding web app looks like below:
 
 ![layout demo screenshot](./screenshots/layout.png)
 
-## Flexible syntaxes 
+## Declarative in JSON5 and YAML 
 Tired of the quotation marks and curly brakets? 
-Funix provides two addtional decorators `@funix_yaml` and `@funix_json` in the YAML and JSON format. 
+Besides the Python-based decorator `@funix`, Funix provides two addtional decorators `@funix_yaml` and `@funix_json5` in the YAML and JSON5 syntaxes. 
 
-TODO: add I/O-major syntax. Combine with whitelist and examples. 
+[The `power` function example above](#customizing-ui-made-easy) uses the JSON5 style. The corresponding Python and YAML versions are given below. 
 
-## Whitelist and examples
+```python
+## If decorating in Python's syntax, 
+## use the following:
+from funix import funix
+@funix(
+    widgets={
+        "x": "slider[0,10,1]",
+        "op": "radio" }, 
+    whitelist={"op": ["square", "cube"]}
+)
+          
+## If decorating in YAML syntax,
+## use the following:
+from funix import funix_yaml
+@funix_yaml("""
+    widgets:
+        x: slider[0,10,1]
+        op: radio
+    whitelist:
+        op: 
+            - square
+            - cube
+""")
+```
 
-Funix provides two additional but mutually exclusive parameters to restrict and simplify, respectively, the value selection in a widget:
-* `whitelist`: only values in the list can be selected in the corresponding widget
-* `examples`: values in the list can be selected in the corresponding widget, but the user can also enter any value per the type hint. 
+## Customization per-attribute or per-IO
 
-TODO: add examples. 
+In all examples above, the configurations are aggregated per-attribute. This might be inconvenient when one needs to see all customizations of the same function I/O, and thus its corresponding widget, in one place.
+Hence, Funix also supports per-IO customization.
+
+To do so, just use the parameter `per_IO_config`, of type `dict`, and put per-IO congifurations in it. For example, the `power` function above can be decorated in the per-IO fashion as follows, in YAML syntax:
+
+```python
+from funix import funix_json5
+@funix_json5("""
+    argument_config": {
+        x": {"widgets": "slider[0,10,1]"},
+        op": {"widgets": "radio", 
+              "whitelist": ["square", "cube"]}
+    }
+""")
+```
+
+In comparison, this is the per-attribute version:
+
+```python
+from funix import funix_json5
+@funix_json5("""
+{
+    widgets: {
+        x: "slider[0,10,1]",
+        op: "radio" } , 
+    whitelist: {
+        op: ["square", "cube"] } 
+}
+""")
+```
 
 ## Multiple functions in one Python script
 
@@ -216,7 +268,53 @@ You can mix Funix-decorated functions and normal functions in one Python script.
 Only the decorated functions are converted to web apps. 
 In a case of multiple Funix-decorated functions, a function selector will be provided at the top the Funix-generated web app.
 
-TODO: Auto Mapping
+For example, the following Python script [code here](./examples/multi_functions.py) contains two Funix-decorated functions, `foo` and `foobar`, and one normal function, `bar`. 
+
+```python
+from funix import funix
+@funix() 
+def foo(x: int) -> int:
+    return x + 1 
+
+def bar(x: int) -> int:
+    return x + 2
+
+@funix()
+def foobar(x: int) -> int:
+    return foo(x) + bar(x)
+
+if __name__ == "__main__":
+    print(foobar(1))
+```
+
+The two screenshots below show the responses when the `foo` and `foobar` functions are selected respectively.
+
+![foo](./screenshots/foo_multi_functions.png)
+![foobar](./screenshots/foobar_multi_functions.png)
+
+## Non-intrusive 
+
+Funix is non-intrusive. You can run the Python script above, or call any function (Funix-decorated or not) in it,  on your terminal as usual. 
+
+```bash
+$ python3 multi_functions.py 
+5
+$ python3 -c "from multi_functions import foo; print (foo(6))"
+7
+```
+
+## Backend 
+Funix gives you both the frontend and the backend from the same piece of code. By default, the backend server is at `localhost:8080` and the endpoint for a function is at `/call/{your_function_name}`. For example, for the `foo` function we can POST to `localhost:8080/call/foo` and the result 7 is printed in the last line: 
+
+```bash
+$ curl -X POST  \
+       -H "Content-Type: application/json" \
+       -d '{"x": 6}' \
+       localhost:8080/call/foo
+7 
+```
+
+
 
 ## More
 

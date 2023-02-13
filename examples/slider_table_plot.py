@@ -7,7 +7,7 @@ from funix import funix
 
 @funix(
         widgets={
-           "a": ["sheet", "slider[1,100]"],
+           "a": "sheet",
            "b": ["sheet", "slider[0,1,0.01]"]
         }
 )
