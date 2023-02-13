@@ -1,0 +1,17 @@
+types:
+  float, str: input
+  int: slider
+  bool: switch
+
+styles:
+  basic:
+    color: "#ff9e1b"
+    contrastText: "#fefefe"
+
+  button:
+    fontColor: "#fefefe"
+  
+  tooltip:
+    arrow: false
+    enterTouchDelay: 0
+
