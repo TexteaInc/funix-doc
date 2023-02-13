@@ -32,8 +32,8 @@ pip install "git+https://github.com/TexteaInc/funix.git"
 ## Just two more lines of code 
 
 A type-hinted Python function can be turned into a web app by adding **as few as two lines of code**:
-* Import a Funix decorator (e.g., `from funix import funix`)
-* decorate the Python function using the decorator (e.g., `@funix()`). 
+* importing a Funix decorator (e.g., `from funix import funix`)
+* decorating the Python function using the decorator (e.g., `@funix()`). 
 
 Below is an example:
 
