@@ -114,7 +114,7 @@ The corresponding web app looks like below.
 
 ![table plot demo static](./screenshots/table_plot.png)
 
-We further copied the data from a spreadsheet to the table to show off Funix' ability to function as a step in your data science workflow. 
+We further copied the data from a spreadsheet to the table to show off Funix' ability to function as a step in your data science workflow. [Watch HD video here](https://youtu.be/4vcYZSXoeW0).
 
 ![table plot demo gif](./videos/table_plot.gif)
 
