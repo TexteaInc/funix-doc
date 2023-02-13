@@ -140,7 +140,7 @@ In Funix, users can use a simple row-based approach to customize the layout. Two
 Funix uses a row-based layput system. 
 The input or output panel, a 2D list, is divided into rows, each of which is a list of dictionaries, each of which specifies a widget, where the keys are the properties of the widget. For more details, please refer to the Reference Manual. 
 
-The example below ([code here](./examples/layout.py)) shows how to customize the layout of the inputs and outputs. In `inptu_layout`, four widgets, two HTML code pieces and two arguments of the function decorated `github_card` are laid out in the same row. In this example, the function `github_card` has returns of three types: an image, a file URL, and a markdown string, which are properly rendered in the output panel. 
+Below is an example ([code here](./examples/layout.py)). In `input_layout`, four widgets, two HTML code pieces and two arguments of the function decorated `github_card` are laid out in the same row with their respective widths. The Funix-decorated function `github_card` has returns of three types: an image, a file URL, and a markdown string, which are properly rendered in the output panel. 
 
 ```python
 from funix import funix
