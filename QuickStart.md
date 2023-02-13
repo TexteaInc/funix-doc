@@ -31,7 +31,11 @@ pip install "git+https://github.com/TexteaInc/funix.git"
 
 ## Just two more lines of code 
 
-Funix's goal is to minimize the amount of code you need to write to build a web app. A Python function can be turned into a web app by adding **as few as two lines of code**. For example, the code below prepends two lines (first importing a Funix decorator and then decorate the function `hello` using the decorator `@funix()`) to the function `hello()`:
+A type-hinted Python function can be turned into a web app by adding **as few as two lines of code**:
+* Import a Funix decorator (e.g., `from funix import funix`)
+* decorate the Python function using the decorator (e.g., `@funix()`). 
+
+Below is an example:
 
 ```python
 from funix import funix # add line one
@@ -39,7 +43,6 @@ from funix import funix # add line one
 @funix()                # add line two 
 def hello(your_name: str) -> str:
     return f"Hello, {your_name}."
-# You are done! 
 ```
 
 Save the code above as `hello.py`.
@@ -49,9 +52,13 @@ Then run this at the terminal:
 python3 -m funix hello
 ```
 
-A web app will be launched at `http://localhost:80`.
+A web app will be launched at `http://localhost:80` and automatically opened in a browser window.
 
-Note that on many Linux systems, you may need  need to run the above command with `sudo` to use port 80. Or, you can use a port that does not need the root privilege, such as 3000, by running:
+![](screenshots/hello.png)
+
+Wolla! Now anyone can use a Python function you write without knowing Python or having the computing environment. 
+
+Note that on Linux, you may need  need to run the above command with `sudo` to use port 80. Or, you can use a port that does not need the root privilege, such as 3000:
 
 ```bash
 python3 -m funix hello_world -P 3000
@@ -59,85 +66,84 @@ python3 -m funix hello_world -P 3000
 
 Then the web app will be launched at `http://localhost:3000`.
 
-![](screenshots/hello.png)
+## Customizing UI is easy
 
-Wolla! Now anyone can use a Python function you write without knowing Python or having the computing environment. 
+Although Funix chooses widgets automatically, you can easily customize them. For example, the code ([here](./examples/slider_markdown.py)) below uses a slider, between 0 and 10 with a step of 1, for the integer input and adds a description to the app in Markdown:
 
-## More examples
+```python
+from funix import funix
 
-**Customizing widgets is easy**
+@funix(
+    widgets={"x": "slider[0,10,1]"}, 
+    description="**Square** a _number_. Made with [Funix](http://funix.io)"
+)
+def square(x: int) -> int:
+    return x * x
+```
 
-**Vector opeartions**
+The corresponding web app looks like below:
+![slider square example](./screenshots/slider_square.png)
 
-**Slider and plots**
+TODO: More complex Markdown examples.
+
+
+## Multi-modal and compound I/Os
+
+Funix can support more than singular I/Os such as integers or strings.
+The example below ([code here](./examples/slider_table_plot.py)) creates a table input and visualizes the two columns in a scatter plot. 
+
+```python 
+from typing import List 
+import matplotlib.pyplot as plt
+
+from funix import funix
+
+@funix(
+    widgets={
+        "a": "sheet",
+        "b": "sheet",
+    }
+)
+def table_plot(a: List[int], b: List[float]) -> plt.figure:
+    fig = plt.figure()
+    plt.plot(a, b)
+    return fig
+```
+
+The corresponding web app looks like below.
+
+![table plot demo static](./screenshots/table_plot.png)
+
+We further copied the data from a spreadsheet to the table to show off Funix' ability to function as a step in your data science workflow. 
+
+![table plot demo gif](./videos/table_plot.gif)
+
+TODO: Change the widget for `b` to `["sheet", "slider[0,1,0.01]"`. 
+
+## Themes
+
+Funix supports themes to provide consistent UI across your web apps. The example code below changes all widgets to yellow from the default blue theme:  
+
+```python
+from funix import funix
+@funix(
+    theme="https://yazawazi.moe/pdf_themes/sunset_v2.yaml"
+)
+def hello(your_name: str) -> str:
+    return f"Hello, {your_name}."
+```
+
+## Customization layouts
+
+
+## Whitelist and examples
+
+
 
 **Only decorated functions are converted to web apps.**
 
 **Multiple I/Os**
 
-## Funtion I/O types and widgets
 
-Funix works by mapping the I/O types of a function to the corresponding I/O widgets. 
-Typing hints must be included for all the inputs and outputs of a function. 
+**Auto Mapping** 
 
-### Customizing individual widgets
-
-To customize widgets, use the parameter `widgets` in a Funix decorator. For example, 
-the code below changes the widget for an integer input from the default input box to a slider:
-
-```python
-from funix import funix
-@funix(widgets={"x": "slider"})
-def square(x: int) -> int:
-    return x * x
-```
-
-Funix supports decorating a function with three  decorators: `@funix`, `@funix_yaml`, and `@funix_json5`, which are based on the syntaxes of Python, YAML, and JSON5, respectively. More details are in the section [Decorator syntaxes](#decorator-syntaxes). We will use whatever syntax the easiest to get the job done in this document.
-
-The three decorators are equivalent except on the syntax. The code above is equivalent to YAML and JSON5 verisons below. 
-
-```python
-from funix import funix_json5
-@funix_json5("""
-{
-    widgets: {
-        x: slider
-    }
-}
-""")
-def square(x: int) -> int:
-    return x * x
-```
-
-```python
-from funix import funix_yaml
-@funix_yaml("""
-widgets:
-  x: slider
-""")
-def square(x: int) -> int:
-    return x * x
-``` 
-
-#### **Input widgets**
-
-The input widgets are mapped from the inputs of a function. Their default and optional widgets are listed below.
-
-#### **Output widgets**
-ddddd
-
-## Decorator syntaxes
-
-## Themes
-
-### Using themes
-
-### Defining themes
-
-## Layouts
-
-## Conditional widget display
-
-## Decorator syntaxes
-
-## Backend APIs
