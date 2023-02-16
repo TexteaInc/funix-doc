@@ -130,16 +130,17 @@ In particular, the widget for variable `a` is a column of input boxes while that
 ```python 
 from typing import List 
 import matplotlib.pyplot as plt
-
-from funix import funix
+from matplotlib.figure import Figure
 
 @funix(
-    widgets={
-        "a": "sheet",
-        "b": ["sheet", "slider[0,1,0.01]"],
-    }
+        widgets={
+           "a": "sheet",
+           "b": ["sheet", "slider[0,1,0.01]"]
+        }
 )
-def table_plot(a: List[int], b: List[float]) -> plt.figure:
+
+# below is a simple matplotlib function 
+def table_plot(a: List[int], b: List[float]) -> Figure:
     fig = plt.figure()
     plt.plot(a, b)
     return fig
