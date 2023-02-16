@@ -1,21 +1,21 @@
 # The Quick Start Guide of Funix 
 
-Your Python function definition is your web app! 
+Your Python function definition is your web app!
 
 ![How funix works](./illustrations/workflow.png)
 
+[Watch 1-minute Funix intro video on YouTube](https://youtu.be/UGp5gbR8f3c)
 
 ## Introduction
 
-* Funix allows you to build web apps directly from your core logic in Python, without bothering with the front-end or web UI.
-* With **as few as two more lines of code**, you can turn any Python function into a web app via Funix.
-* Unlike other Python-based frameworks for building web apps, Funix does not require you to create widgets in Python. **Just focus on your core logic.**
-* But if you need to customize the UI, you can do it declaratively in Python, YAML, or JSON. Themes can also be used to provide consistent UI across your web apps.
-* How: Funix automatically chooses I/O widgets for your web app by analyzing the typing hint in your function's signature. 
-* Open source under the MIT license.
+* Build web apps directly from your core logic in Python, without bothering with the front-end or web UI.
+* In **as few as two lines of code**, turn any Python function into a web app via Funix.
+* UI customization available in declarative fashion in JSON5 or YAML. Themes supported too. 
+* How: Funix automatically chooses I/O widgets for your web app by analyzing the type hint in your function's signature. 
+* Non-intrusive: you can still run your code locally. 
 
 ## Acknowledgement
-We were inspired by FastAPI's approach of using typing hints to build apps. We also want to thank Streamlit, Gradio, PyWebIO, and Pynecone for their influence on the development of Funix. Our backend is implemented using Flask, and the front-end primarily using Material UI. Lastly, Funix was made possible with the generous investment from Miracle Plus Fund I to Textea Inc. 
+We were inspired by FastAPI's approach of using type hints to build apps. We also want to thank Streamlit, Gradio, PyWebIO, and Pynecone for their influence on the development of Funix. Our backend is implemented using Flask, and the front-end primarily using Material UI. Lastly, Funix was made possible with the generous investment from Miracle Plus (formerly Y Combinator China) to Textea Inc. 
 
 ## Installing Funix
 
@@ -35,7 +35,7 @@ A type-hinted Python function can be turned into a web app by adding **as few as
 * importing a Funix decorator (e.g., `from funix import funix`)
 * decorating the Python function using the decorator (e.g., `@funix()`). 
 
-Below is an example:
+Below is an example (source code [here](./examples/hello.py)):
 
 ```python
 from funix import funix # add line one
@@ -65,6 +65,22 @@ python3 -m funix hello_world -P 3000
 ```
 
 Then the web app will be launched at `http://localhost:3000`.
+
+## Can Funix do AI? Of course! 
+```python
+from funix import funix
+from funix.hint import Images
+import openai  # pip install openai
+
+openai.api_key = os.environ.get("OPENAI_KEY")
+
+def dalle(prompt: str = "a cat") -> Images:
+    response = openai.Image.create(prompt=prompt, n=1, size="1024x1024")
+    return response["data"][0]["url"]
+```
+
+![Dalle demo](./screenshots/dalle.jpg)
+
 
 ## Customizing UI made easy
 
@@ -276,6 +292,7 @@ from funix import funix
 def foo(x: int) -> int:
     return x + 1 
 
+# will NOT be converted to a web app
 def bar(x: int) -> int:
     return x + 2
 
