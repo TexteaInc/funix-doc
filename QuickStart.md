@@ -74,6 +74,7 @@ import openai  # pip install openai
 
 openai.api_key = os.environ.get("OPENAI_KEY")
 
+@funix()
 def dalle(prompt: str = "a cat") -> Images:
     response = openai.Image.create(prompt=prompt, n=1, size="1024x1024")
     return response["data"][0]["url"]

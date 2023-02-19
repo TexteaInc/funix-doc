@@ -7,6 +7,6 @@ Funix: build web apps directly and only from the core logic in Python
 
 ## Team
 The Funix team at Textea consists of:
-* [Ruixuan Tu]()
-* [Forrest Sheng Bao]()
-* [Yazawazi]()
+* [Ruixuan Tu](https://github.com/Turx)
+* [Yazawazi](https://github.com/Yazawazi)
+* [Forrest Sheng Bao](https://forrestbao.github.io/)
