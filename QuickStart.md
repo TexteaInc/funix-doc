@@ -92,6 +92,8 @@ This example also leverages Funix's JSON5 support to facilitate declarative UI c
 See more in the section [JSON5 and YAML support](#declarative-in-json5-and-yaml) below. 
 
 ```python
+import typing
+
 from funix.hint import Markdown
 from funix import funix_json5
 @funix_json5("""
@@ -99,13 +101,11 @@ from funix import funix_json5
     widgets: {
         x: "slider[0,10,1]",
         op: "radio" } , 
-    whitelist: {
-        op: ["square", "cube"] } 
 }
 """
 )
 
-def power(x: int, op: str) -> Markdown:
+def power(x: int, op: typing.Literal["square", "cube"]) -> Markdown:
     if op =="square":
         return  f"\
 * The _square_ of {x} is **{x * x}**. \n \
@@ -229,8 +229,7 @@ from funix import funix
 @funix(
     widgets={
         "x": "slider[0,10,1]",
-        "op": "radio" }, 
-    whitelist={"op": ["square", "cube"]}
+        "op": "radio" }
 )
           
 ## If decorating in YAML syntax,
@@ -240,10 +239,6 @@ from funix import funix_yaml
     widgets:
         x: slider[0,10,1]
         op: radio
-    whitelist:
-        op: 
-            - square
-            - cube
 """)
 ```
 
@@ -259,8 +254,7 @@ from funix import funix_json5
 @funix_json5("""
     argument_config": {
         x": {"widgets": "slider[0,10,1]"},
-        op": {"widgets": "radio", 
-              "whitelist": ["square", "cube"]}
+        op": {"widgets": "radio"}
     }
 """)
 ```
@@ -273,9 +267,8 @@ from funix import funix_json5
 {
     widgets: {
         x: "slider[0,10,1]",
-        op: "radio" } , 
-    whitelist: {
-        op: ["square", "cube"] } 
+        op: "radio" } 
+    } 
 }
 """)
 ```
