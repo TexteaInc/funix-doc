@@ -69,13 +69,13 @@ Then the web app will be launched at `http://localhost:3000`.
 ## Can Funix do AI? Of course! 
 ```python
 from funix import funix
-from funix.hint import Images
+from funix.hint import Image
 import openai  # pip install openai
 
 openai.api_key = os.environ.get("OPENAI_KEY")
 
 @funix()
-def dalle(prompt: str = "a cat") -> Images:
+def dalle(prompt: str = "a cat") -> Image:
     response = openai.Image.create(prompt=prompt, n=1, size="1024x1024")
     return response["data"][0]["url"]
 ```
@@ -269,7 +269,7 @@ from funix import funix_json5
         x: "slider[0,10,1]",
         op: "radio" } 
     } 
-}
+}g
 """)
 ```
 
