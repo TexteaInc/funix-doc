@@ -2,19 +2,16 @@ from typing import List
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
+import funix
 
-# let's turn it into a web app via Funix 
-from funix import funix 
-
-@funix(
+@funix.funix(
         widgets={
            "a": "sheet",
-           "b": ["sheet", "slider[0,1,0.01]"]
+           "b": ["sheet", "slider[0,1,0.1]"]
         }
 )
 
-
-# below is a simple matplotlib function 
+# A simple matplotlib function 
 def table_plot(a: List[int], b: List[float]) -> Figure:
     fig = plt.figure()
     plt.plot(a, b)

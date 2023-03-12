@@ -1,5 +1,5 @@
 from funix import funix
-from funix.hint import Images, Files, Markdown 
+from funix.hint import Image, File, Markdown 
 
 @funix(
     description="""Enter a Github repo's URL, 
@@ -23,7 +23,7 @@ from funix.hint import Images, Files, Markdown
     ]
 )
 def github_card(user_name: str="texteainc", 
-                repo_name: str="json-viewer") -> (Images, Files, Markdown):
+                repo_name: str="json-viewer") -> (Image, File, Markdown):
     url = f"https://github.com/{user_name}/{repo_name}"
     author = url.split("/")[3]
     name = url.split("/")[4]
