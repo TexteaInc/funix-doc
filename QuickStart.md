@@ -1,4 +1,4 @@
-# The Quick Start Guide of Funix 
+# QuickStart Guide of Funix 
 
 Your Python function definition is your web app!
 
