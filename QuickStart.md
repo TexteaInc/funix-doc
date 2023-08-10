@@ -29,42 +29,34 @@ or from Funix's GitHub repo
 pip install "git+https://github.com/TexteaInc/funix.git"
 ```
 
-## Just two more lines of code 
+## Hello, World! 
 
-A type-hinted Python function can be turned into a web app by adding **as few as two lines of code**:
-* importing a Funix decorator (e.g., `from funix import funix`)
-* decorating the Python function using the decorator (e.g., `@funix()`). 
-
-Below is an example (source code [here](./examples/hello.py)):
+Funix can turn any type-hinted Python into a web app, with the function's argument becoming the input widgets of the web app and the return becoming the output widgets.
+For example, suppose that a Python function below is saved in the file `hello.py`:
 
 ```python
-from funix import funix # add line one
-
-@funix()                # add line two 
 def hello(your_name: str) -> str:
     return f"Hello, {your_name}."
 ```
 
-Save the code above as `hello.py`.
-Then run this at the terminal:
+Run the command below at the terminal
 
 ```bash
-python3 -m funix hello
+funix -l hello.py 
 ```
 
-A web app will be launched at `http://localhost:80` and automatically opened in a browser window.
+And you get a web app at `http://localhost:80` automatically opened in a browser window. 
 
 ![](screenshots/hello.png)
 
-Wolla! Now anyone can use a Python function you write without knowing Python or having the computing environment. 
+Voila! 
 
-Note that on Linux, you may need  need to run the above command with `sudo` to use port 80. Or, you can use a port that does not need the root privilege, such as 3000:
+> On Linux, you may need to run the above command with `sudo` to use port 80. Or, you can use a port that does not need the root privilege, such as 3000:  `funix hello.py -P 3000`. Then the web app will be launched at `http://localhost:3000`.
 
-```bash
-python3 -m funix hello_world -P 3000
-```
+## The Funix decorators 
 
-Then the web app will be launched at `http://localhost:3000`.
+To customize your web app, you can use the decorator `@funix` in Python's syntax, or `@funix_yaml` and `@funix_json5` in YAML and JSON5 syntaxes respectively. You will see more examples below and in the [Reference Manual](./Reference.md).
+
 
 ## Can Funix do AI? Of course! 
 ```python
@@ -74,7 +66,6 @@ import openai  # pip install openai
 
 openai.api_key = os.environ.get("OPENAI_KEY")
 
-@funix()
 def dalle(prompt: str = "a cat") -> Image:
     response = openai.Image.create(prompt=prompt, n=1, size="1024x1024")
     return response["data"][0]["url"]
