@@ -12,7 +12,7 @@ Suppose you have a Python function defined in a file `hello.py`. Then you can co
 funix -l hello.py
 ```
 
-and then see the web app at `http://localhost:80` in a browser window automatically poped. The arguments of the function are mapped to the input widgets of the web app. The return values of the function are displayed in the output widget.
+The web app runs at `http://localhost:80` in a browser window automatically popped. The arguments of the function are mapped to the input widgets of the web app. The return values of the function are displayed in the output widget.
 
 ## The Funix decorators
 The appearance and behavior of a web app can be customized using Funix decorators.  For example, the code below changes the widget for an integer input from the default input box to a slider:
@@ -84,6 +84,15 @@ The value provided to `widget` must be a `Dict[str, str]` where the first string
   * allowed widget names: 
     * `checkbox` (default): a checkbox. The UI is [MUI's Checkbox](https://mui.com/components/checkboxes/).
     * `switch`: a switch. The UI is [MUI's Switch](https://mui.com/components/switches/).
+* `range`
+  * `range` type is a special type of Python, which is essentially a sequence of integers. 
+  * allowed widget names:
+    * `slider` (default). The `start`, `end`, and `step` values for `slider` are the same as those specified when initializing a `range`-type argument. The UI is [MUI's Slider](https://mui.com/components/slider/).
+  * Examples: 
+    * ```python
+      def square(x: range(0, 100, 10)) -> int:
+          return x * x
+      ```
 
 #### Compound types: 
 * `typing.List[T]` (`typing` is Python's built-in module)
@@ -109,6 +118,7 @@ The value provided to `widget` must be a `Dict[str, str]` where the first string
   * Examples
     * ```python
         import funix 
+        import typing
 
         @funix.funix_yaml("""
         widgets:
@@ -118,10 +128,17 @@ The value provided to `widget` must be a `Dict[str, str]` where the first string
             - sheet
             - 'slider[0, 100.0, 0.1]'
         """)
-        def just_test(a: List[int], b: List[float]) -> dict:
+        def just_test(a: typing.List[int], b: typing.List[float]) -> dict:
             return {"a": a, "b": b}
       ```
       ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e354e547-4f57-4ba2-a907-387d6aed8471/Untitled.png)
+
+#### Funix's additional types
+Via the module `funix.widget.builtin`, Funix adds widgets to allow users to drag-and-drop MIME files as a web app's inputs. They will be converted into Python's `bytes` type. 
+
+* `funix.widget.builtin.BytesFile`
+  * Examples: 
+    * [ChatPDF](https://github.com/forrestbao/ChatPaper), a web app using ChatGPT API to query information in a user-uploaded PDF file. 
 
 
 ### Output types and widgets
@@ -144,18 +161,309 @@ To facilitate the rendering of MIME types, we introduce a module `funix.hint`.
 <!-- FIXME: plural or singular?  -->
 * `Code`: For rendering a string as a code block. Rendered using [React Syntax Highlighter Prism]
 
-## Decorator syntaxes
+## Setting the default and example values in widgets
+Quite often, a web app has default or example values prefilled at widgets for convenience. Funix provides handy solutions to support them. 
+
+Default values can be set using Python's built-in default value for keyword arguments. 
+
+<!-- add example -->
+
+There is no Python's built-in way to set example values. Funix provides a decorator attribute `examples` to support it. The value to be provided to `examples` attribute is a `Dict[str, typing.List[Any]]` where the key is an argument name and the value is a list of example values.
+
+Example 1: 
+```python
+import typing
+
+from funix import funix
+
+@funix(
+        examples={"arg2": [1, 5, 7]}, 
+        widgets={"arg1": "radio"}
+)
+def argument_selection(
+        arg1: typing.Literal["is", "is not"]="is not", 
+        arg2: str="prime",
+        ) -> str:
+    return f"The number {arg1} {arg2} {arg3}."
+
+```
+
+![](./screenshots/default_example_literal.png)
+
+Example 2: 
+
+```python
+import funix
+import typing
+import openai 
+openai.api_key = os.environ.get("OPENAI_KEY")
+
+@funix.funix(
+    prompt = ["Who is Einstein?", "Tell me a joke. "]
+)
+def ChatGPT_single_turn(
+    prompt: str,
+    model : typing.Literal['gpt-3.5-turbo', 'gpt-3.5-turbo-0301'] = 'gpt-3.5-turbo'
+) -> str:
+    completion = openai.ChatCompletion.create(
+        messages=[{"role": "user", "content": prompt}],
+        model=model
+    )
+    return f'ChatGPT says:  {completion["choices"][0]["message"]["content"]}'
+```
+
+<!-- Add screenshot -->
+
+## Naming your app or widgets
+To help users understand your app or widgets, you can explain them using the decorator attributes `description` and `argument_labels` respectively. The value provided to `description` is a Markdown-syntax string. The value provided to `argument_labels` is of the type `Dict[str, str]` where the key is an argument name and the value is a Markdown-syntax string.
+
+Example 1: 
+```python
+import funix
+
+@funix.funix(
+    description = "**Calculate** _your_ BMI", 
+    argument_labels = {
+        "weight": "Weight (kg)", 
+        "height": "Height (m)"
+    }
+)
+def BMI(weight: float, height: float) -> str:
+    bmi = weight / (height**2)
+    return f"Your BMI is: {bmi:.2f}"
+```
+
+![BMI example demonstrating ](screenshots/bmi_description_labels.png)
+
+
+## Customizing layouts 
+
+By default, Funix puts the input and output widgets in two panels that are put side-by-side, respectively.
+In either panel, widgets are laid out in the order they appear in the function's signature, one-widget per line and top-down. 
+
+
+### Customizing the panel arrangement 
+
+TBD. 
+
+### Customizing the widget layout
+
+The input and output layout can be customized via the attribute `input_layout` and `output_layout` that use a row-based layout system where each row is a list of cells. Each cell is a dictionary that specifies the widget type & name and the number of columns it occupies. 
+The type of `input_layout` and `output_layout` is : 
+```python 
+typing.List[  # each row 
+  typing.List[ # each cell in the same row
+    typing.Dict[str, str|int]  # see below 
+  ]
+]
+``` 
+
+The per-cell dictionary must have one entry, whose 
+* **key** specifies the widget type, which is a string "argument" (if the widget is an input/argument), "return" (if the widget is an output/return), "markdown", "html", or "divider". 
+* **value** is the content of the widget
+  * If the widget type is "argument", then the value is the argument name as a `str`. 
+  * If the widget type is "return", then the value is the index of the return value as an `int`. 
+  * If the widget type is "markdown" or "html", then the value is a Markdown- or HTML-syntax string. 
+  * If the widget type is "divider", then the value is the text to be displayed on the divider. When the text is an empty string, then nothing is displayed.
+
+Optionally, the per-cell dictionary can contain an entry of the string key `width` and the value being an integer. The value specifies the number of columns, as defined in [MUI's Grid](https://mui.com/material-ui/react-grid/), the cell occupies. The default value is 1.
+
+Note that widgets not covered in `input_layout` or `output_layout` will be displayed in the default order and after those covered in `input_layout` and `output_layout`.
+
+**Example 1**: 
+
+```python
+@funix.funix(
+  input_layout=[
+    [{"markdown": "### Sender information"}],  # row 1 
+    [
+      {"argument": "first_name", "width": 3}, 
+      {"argument": "last_name",  "width": 3}, 
+    ],    # row 2 
+    [{"argument": "address", "width": 6}], # row 3 
+    [ # row 4 
+      {"argument": "city",  "width": 2.5}, 
+      {"argument": "state", "width": 2}, 
+      {"argument": "zip_code",   "width": 2}
+    ], 
+    [{"html": "<a href='http://funix.io'>We love Funix</a>"}],  # row 5 
+  ], 
+  output_layout = [
+    [{"divider":"zip code is ", "return": 2}], 
+    [{"divider": "from the town", "return": 0, "return": 1}], 
+  ]
+)
+def layout_shipping(
+    first_name: str, 
+    last_name: str, 
+    address: str, 
+    city: str,
+    state: str, 
+    zip_code: str 
+    )-> (str, str, str):
+    return city, state, zip_code
+```
+![Layout sender](screenshot/../screenshots/layout_sender.png)
+
+**Example 2: Using EasyPost API** [Source code](../examples/shipping.py)
+
+![Layout shipping](./screenshots/easypost_shipping.png)
+
+## Conditional input widget display
+
+Funix allows controlling the appearance of input widgets based on the values of other widgets via the attribute `conditional_visible` which is of the type: 
+
+```py
+typing.List[ # a series of rules
+  typing.TypedDict( # each rule 
+    "show": typing.List[str] # arguments visible only       
+    "when": typing.List[     # when conjuction of conditions holds
+        typing.Dict[str, Any]  # each condition
+    ]
+  )
+]
+```
+
+`show`'s value is a list of argument name strings. 
+`when`'s value is a list of dictionaries, representing a series of conditions whose conjunction must be True for arguments in corresponding `show` list to appear. 
+
+If `when`'s value is 
+
+```{"argument1": value1, "argument2": value2}```,
+
+then it 
+means the condition 
+
+```argument1 == value1 && argument2 == value2```
+
+> TODO: add an example 
+
+## Per-argument configuration via `argument_config`
+
+In all examples above, we provide values for each attribute (such as `widgets`, `examples`, or `argument_labels`) in a Funix decorator like this: 
+```py
+import funix
+@funix.funix(
+  attribute_name_1 = {
+    argument_1: ...
+    argument_2: ...
+  }, 
+  attribute_name_2 = {
+    argument_1: ...
+    argument_2: ...
+  },
+)
+```
+
+When there are many arguments, this may be inconvenient because different attributes of the same argument are scattered. 
+Hence, Funix introduces a new attribute `argument_config` to support grouping all attributes of the same argument together. The example above can be rewritten as below: 
+
+```py
+import funix
+@funix.funix(
+  argument_config = {
+    argument_1: {
+      attribute_name_1: ... 
+      attribute_name_2: ... 
+    }, 
+    argument_2: {
+      attribute_name_1: ... 
+      attribute_name_2: ... 
+    }
+  }
+)
+```
+
 
 ## Themes
 
+Theme controls the appearances (such as color, size, font, widget choices) of apps. 
+
 ### Using themes
+
+A theme, provided from a local file or a web URL, can be set to update the appearances of all functions decorated by Funix, like the two examples below: 
+
+```py
+from funix import set_global_theme
+
+set_global_theme("./sunset_v2.yaml") 
+
+set_global_theme("https://yazawazi.moe/pdf_themes/sunset_v2.yaml") # Theme URL
+"""
+```
+
+Or a theme can be applied to individual functions like below using a Funix decorator attribute `theme`: 
+
+```py
+import funix 
+
+@funix.funix(
+  theme = "./sunset_v2.yaml"
+)
+def foo():
+	 pass
+
+@funix.funix(
+  theme = "https://yazawazi.moe/pdf_themes/sunset_v2.yaml"
+)
+def foo():
+	 pass
+```
+
+You can also import multiple themes, name them, use the names to easily switch between themes instead of repeating the lengthy URLs or file paths.
+
+```python
+from funix import import_theme
+
+"""
+import_theme
+
+# Parameter 1: URL or file path of the theme file
+# Your URL must include the schema like http or https
+# Parameter 2: Theme name
+
+Local Theme Search Priority:
+1. Current directory
+2. ~/.funix/themes directory
+3. Not found, raise Error
+"""
+import_theme("https://yazawazi.moe/pdf_themes/sunset_v2.yaml", name="sunset") # From URL 
+import_theme("./sunset_v2.yaml", name="sunset") # From Path
+```
+
+A named theme can be applied to all functions or individual functions. For example, to use the "sunset" theme imported and name above: 
+
+```python
+import funix 
+funix.set_global_theme("sunset") 
+
+@funix.funix(
+  theme = "sunset"
+)
+def foo():
+	 pass
+```
+
+> FIXME: Yazawazi: 1) The theme URL is no longer valid. 2)  Please ensure the syntax and document are consistent. 
+
 
 ### Defining themes
 
-## Layouts
+TBD. Question: Is our theme now Python-based or Yaml-based? 
 
-## Conditional widget display
+## History
 
-## Decorator syntaxes
+Funix automatically logs the calls of an app in your browser so you can review the history later. For example, if you have multiple conversations with ChatGPT, then you can review the different conversations. 
+
+There are two ways to review history. One 
+
+> FIXME: Bao: to finish. 
+
+## Sessions
+
+## Passing values across pages for Multipage apps
+
+
 
 ## Backend APIs
+
