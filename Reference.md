@@ -55,10 +55,10 @@ def square(x: int) -> int:
 
 We will use whatever decorator the easiest to get the job done in this document.
 
-## Supported I/O types and widgets
+## Supported I/O types and widget customization
 
 To customize the widget of a Funix-decorated function, use the Funix decorator attribute `widget`. 
-The value provided to `widget` must be a `Dict[str, str]` where the first string is an argument name and the second string is a widget name.
+The value provided to `widget` must be a `Dict[str|List[str], str]` where the key is an argument name or a list of argument names and value is a widget name.
 
 ### Input types and their widgets
 
@@ -410,7 +410,7 @@ def foo():
 	 pass
 ```
 
-You can also import multiple themes, name them, use the names to easily switch between themes instead of repeating the lengthy URLs or file paths.
+You can also import multiple themes, give them aliases, use the aliases to easily switch between themes instead of repeating the lengthy URLs or file paths.
 
 ```python
 from funix import import_theme
@@ -449,21 +449,72 @@ def foo():
 
 ### Defining themes
 
-TBD. Question: Is our theme now Python-based or Yaml-based? 
+TBD. 
 
-## History
+## Call history
 
-Funix automatically logs the calls of an app in your browser so you can review the history later. For example, if you have multiple conversations with ChatGPT, then you can review the different conversations. 
+Funix automatically logs the calls of an app in your browser for you to review the history later. This can be particularly useful when you want to compare the outputs of an app given different inputs, e.g., different conversations with ChatGPT. Funix offers two ways to view the history: the rightbar and the comprehensive log. 
 
-There are two ways to review history. One 
+The history rightbar can be toggled like in GIF below. All calls are timestamps. Clicking on one history call will popular the input and output of the call to the input and output widgets. You can further (re)name, delete and export (to JSON) each call. 
 
-> FIXME: Bao: to finish. 
+![history sidebar](./screenshots/history_sidebar.gif)
+
+A comprehensive log can be toggled by clicking the clock icon at the top right corner of a Funix-converted app. The inputs and outputs of each call are presented in JSON trees. You can jump from the JSON tree to the UI with the inputs and outputs populated by clicking the "View" button under a call. Note that the comprehensive log presents calls for all Funix-converted apps in your browser, unlike the history rightbar which displays history per-app. 
+
+![history comprehensive log](./screenshots/history_comprehensive_log.gif) 
 
 ## Sessions
 
-## Passing values across pages for Multipage apps
+Need to turn on `t` option when starting Funix. 
+
+```python
+from funix import funix
 
 
+user_word = "https://peps.python.org/pep-0339/"
+
+
+@funix(
+    session_variables=["user_word"],
+)
+def set_word(word: str) -> str:
+    global user_word
+    user_word = word
+    return "Success"
+
+
+@funix(
+    session_variables=["user_word"],
+)
+def get_word() -> str:
+    return user_word
+```
+
+
+
+```
+@funix()
+def set_word(word: str) -> str:
+    set_global_variable("user_word", word)
+    return "Success"
+
+
+@funix()
+def get_word() -> str:
+    return get_global_variable("user_word")
+```
+
+## Passing values across pages for multipage apps
+
+
+## Secret 
 
 ## Backend APIs
 
+## Command line options 
+
+funix -g  http://github.com/funix/funix -r examples -R . 
+
+funix -g  http://github.com/funix/funix -r examples  better.py  
+
+TODO: 
