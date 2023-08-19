@@ -62,7 +62,7 @@ The value provided to `widget` must be a `Dict[str|List[str], str]` where the ke
 
 ### Input types and their widgets
 
-#### Atomic types: 
+#### Basic types: 
 
 * `int` and `float`
   * allowed widget names:
@@ -100,9 +100,9 @@ The value provided to `widget` must be a `Dict[str|List[str], str]` where the ke
   * Elements of `typing.List[T]` will be collectively displayed in one widget together.
   * allowed widget names:
     * `simplearray` (default): The collective UI is [RJSF ArrayField](https://rjsf-team.github.io/react-jsonschema-form/), while the UIs for elements are the default one for type `T`. 
-    * `[simplearray, WIDGET_OF_ATOMIC_TYPE]`: This option allows customizing the UI for elements.  `WIDGET_OF_ATOMIC_TYPE` is a widget name for an atomic type above. The collective UI is [RJSF ArrayField](https://rjsf-team.github.io/react-jsonschema-form/) while the UIs for elements are per `WIDGET_OF_ATOMIC_TYPE`. 
+    * `[simplearray, WIDGET_OF_BASIC_TYPE]`: This option allows customizing the UI for elements.  `WIDGET_OF_BASIC_TYPE` is a widget name for a basic data type above. The collective UI is [RJSF ArrayField](https://rjsf-team.github.io/react-jsonschema-form/) while the UIs for elements are per `WIDGET_OF_BASIC_TYPE`. 
     * `sheet`: All function arguments of this type will be displayed in an Excel-like sheet. The collective UI is [MUIX DataGrid](https://mui.com/x/react-data-grid/) while the UIs for elements are the default one for type `T`. 
-    * `[sheet, WIDGET_OF_ATOMIC_TYPE]`: This option allows customizing the UI for elements. Usage is similar to that of `[simplearray, WIDGET_OF_ATOMIC_TYPE]` above. 
+    * `[sheet, WIDGET_OF_BASIC_TYPE]`: This option allows customizing the UI for elements. Usage is similar to that of `[simplearray, WIDGET_OF_BASIC_TYPE]` above. 
     * `json`: JSON string laid out with toggles, indentations, and syntax highlights. The UI is [React-Json-View](https://github.com/mac-s-g/react-json-view). 
   * Examples (To add and must add)
 * `typing.TypedDict` (`typing` is Python's built-in module)
@@ -115,23 +115,23 @@ The value provided to `widget` must be a `Dict[str|List[str], str]` where the ke
   * allowed widget names: 
     * `radio` (default): a radio button group. The UI is [MUI's Radio](https://mui.com/components/radio-buttons/).
     * `select`: a dropdown menu. The UI is [MUI's Select](https://mui.com/components/selects/).
-  * Examples
-    * ```python
-        import funix 
-        import typing
+* Examples
+  * ```python
+      import funix 
+      import typing
 
-        @funix.funix_yaml("""
-        widgets:
-        a:
-            - sheet
-        b:
-            - sheet
-            - 'slider[0, 100.0, 0.1]'
-        """)
-        def just_test(a: typing.List[int], b: typing.List[float]) -> dict:
-            return {"a": a, "b": b}
-      ```
-      ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e354e547-4f57-4ba2-a907-387d6aed8471/Untitled.png)
+      @funix.funix_yaml("""
+      widgets:
+      a:
+          - sheet
+      b:
+          - sheet
+          - 'slider[0, 100.0, 0.1]'
+      """)
+      def just_test(a: typing.List[int], b: typing.List[float]) -> dict:
+          return {"a": a, "b": b}
+    ```
+    ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e354e547-4f57-4ba2-a907-387d6aed8471/Untitled.png)
 
 #### Funix's additional types
 Via the module `funix.widget.builtin`, Funix adds widgets to allow users to drag-and-drop MIME files as a web app's inputs. They will be converted into Python's `bytes` type. 
@@ -374,82 +374,151 @@ import funix
 )
 ```
 
-
 ## Themes
 
-Theme controls the appearances (such as color, size, font, widget choices) of apps. 
+One principle of Funix is to select the widget for a variable automatically based on its type without manual intervention, which is tedious, redundant, and inconsistent across multiple apps/functions.
+The mapping from a type to a widget is defined in a theme. 
 
-### Using themes
+Besides controlling the type-to-widget mapping, a theme also controls other appearances of widgets, such as color, size, font, etc. In particular, Funix renders widgets using [Material UI, also called MUI](https://mui.com/). Thus a Funix theme gives users the direct access to MUI components and their properties.
 
-A theme, provided from a local file or a web URL, can be set to update the appearances of all functions decorated by Funix, like the two examples below: 
+### Theme format
+
+In Funxi, a theme is a dictionary, for example: 
 
 ```py
-from funix import set_global_theme
-
-set_global_theme("./sunset_v2.yaml") 
-
-set_global_theme("https://yazawazi.moe/pdf_themes/sunset_v2.yaml") # Theme URL
-"""
+"sunset": # the name of the theme
+  {
+   "widgets": { # dict, map types to widgets 
+        "str": "inputbox",
+        ("int", "float"): ("slider", {"min": 0, "max": 100, "step": 2}),
+        "Literal": "radio", 
+    }, 
+   "props": {
+        ("slider", "radio"): {
+            "color": "#99ff00"
+        }
+        "radio": {
+          "size" : "medium" 
+        } 
+    }, 
+    "typograhpy": {
+        "fontSize": 16,    # font size, px
+        "fontWeight[Light|Regular|Medium|Bold]": 500, # Font weight in light, regular, medium or bold
+        "h1": {
+            "fontFamily": "Droid Sans",   # Font family
+            "letterSpacing": "0.2rem"     # Word spacing
+        }
+    }, 
+    "palette": {
+        "background": {
+            "default": "#112233", # Default background color
+            "paper": "#112233", # In <Paper /> color
+        },
+        "primary": {
+          "main" : "#ddcc11",
+          "contrastText" : "#d01234"
+        }
+    }
+  }
 ```
 
-Or a theme can be applied to individual functions like below using a Funix decorator attribute `theme`: 
+A theme definition dictionary contains four fields, `widgets`, `props` `typography`, and `palette`: 
+
+- As a dictionary, the `widgets` field maps data types to UI widgets. A key in the `widgets` dictionary represents a type (a `str`, e.g., `"str"`) or a plurality of types (a `tuple[str]`, e.g., `("int", "float")`). Representing a widget type, a value in the `widgets` dictionary is a string as mentioned above in the Section [Supported I/O types and widget customization](#supported-io-types-and-widget-customization) above. Hence, a value is a string (e.g., `"inputbox"`) for a non-parametric widget, or a tuple of a string (widget name) and a dictionary (parameters and values) for a parametric widget (e.g., `("slider", {"min":0, "max":100, "step":2})`.
+- As a dictionary, the `props` field maps Funix widgets to their Material-UI props. It gives a user direct access to `props` of an MUI component. In the example above, we set [the `color` prop of MUI's `slider`](https://mui.com/material-ui/api/slider/#Slider-prop-color) and [the `size` prop of MUI's `radio`](https://mui.com/material-ui/api/radio/#Radio-prop-size). 
+- The `typograph` field is a subset of the `typograph` field  in a [MUI theme object](https://mui.com/material-ui/customization/default-theme/?expand-path=$.typography), expressed as a nested dictionary. 
+- Similar to the `typograph` field, the `palette` field is a subset of the `palette` field in a [MUI theme object](https://mui.com/material-ui/customization/default-theme/?expand-path=$.typography), expressed as a nested dictionary. 
+
+A theme file is simply a Python file containing a dictionary of theme definitions, like this 
+```py
+# my_themes.py
+{
+  "sunset" : # first theme 
+    {
+      # defintion of sunset
+    }, 
+  "another_theme":
+    {
+      # defintion of another_theme
+    },  
+  "yet_another_theme":
+    {
+      # defintion of yet_another_theme
+    },    
+}
+```
+
+### Importing themes
+
+Because a Funix theme is a nested Python dictionary, 
+it can be imported and used like any other Python dictionary.
+
+A Funix theme can be imported from a `.py` script file from a local path or a web URL, like the two snippets below
 
 ```py
 import funix 
+funix.import_theme(
+  source="http://example.com/my_themes.py", 
+  theme_name="sunset", 
+  alias = "my_favorite_theme")
 
-@funix.funix(
-  theme = "./sunset_v2.yaml"
-)
-def foo():
-	 pass
-
-@funix.funix(
-  theme = "https://yazawazi.moe/pdf_themes/sunset_v2.yaml"
-)
-def foo():
-	 pass
+funix.import_theme(
+  source="../my_themes.py", 
+  theme_name="sunset", 
+  alias = "my_favorite_theme")
 ```
 
-You can also import multiple themes, give them aliases, use the aliases to easily switch between themes instead of repeating the lengthy URLs or file paths.
+When importing a Funix theme from a Python `.py` script file, local or web, other than `source`, `theme_name` is a mandatory/positional argument because one theme file may contain more than one themes, each of which is a dictionary. 
+In this case, the argument `alias` is optional. 
+An imported theme can be referred to later (See [Applying themes](#applying-themes)) using the `alias` if it is set, or `theme_name` otherwise.
 
-```python
-from funix import import_theme
 
-"""
-import_theme
-
-# Parameter 1: URL or file path of the theme file
-# Your URL must include the schema like http or https
-# Parameter 2: Theme name
-
-Local Theme Search Priority:
-1. Current directory
-2. ~/.funix/themes directory
-3. Not found, raise Error
-"""
-import_theme("https://yazawazi.moe/pdf_themes/sunset_v2.yaml", name="sunset") # From URL 
-import_theme("./sunset_v2.yaml", name="sunset") # From Path
-```
-
-A named theme can be applied to all functions or individual functions. For example, to use the "sunset" theme imported and name above: 
-
-```python
+Or even, you can define and import a theme on-the-fly! 
+```py
 import funix 
-funix.set_global_theme("sunset") 
+
+theme_dict = {
+  # theme definition
+  "widgets" : {
+    "range" : "inputbox" 
+  }
+}
+
+funix.import_theme(
+  theme_dict = theme_dict,
+  alias = "my_favorite_theme")
+```
+
+When importing a Funix theme from a theme dictionary, `alias` is **mandatory** because it is the only way to refer to it later when [applying the theme](#applying-themes).
+
+## Applying themes 
+
+Once a theme is imported, it can be applied to stylize all functions in one Python script using the `set_default_theme` function: 
+
+```py
+funix.set_default_theme("my_favorite_theme")
+```
+
+which takes a `str`-type argument that is either an alias defined when importing the theme or the theme name given by the theme author in the theme definition's `name` field, 
+
+or a theme can be applied to individual functions like below using a Funix decorator attribute `theme`: 
+
+```py
+
+import funix 
+
+# import a theme 
+funix.import_theme(
+  source="http://example.com/funix_themes.py", theme_name="test_theme", 
+  alias = "my_favorite_theme")
 
 @funix.funix(
-  theme = "sunset"
+  theme = "my_favorite_theme" # apply a theme 
 )
 def foo():
 	 pass
 ```
 
-> FIXME: Yazawazi: 1) The theme URL is no longer valid. 2)  Please ensure the syntax and document are consistent. 
-
-
-### Defining themes
-
-TBD. 
 
 ## Call history
 
@@ -465,51 +534,73 @@ A comprehensive log can be toggled by clicking the clock icon at the top right c
 
 ## Sessions
 
-Need to turn on `t` option when starting Funix. 
+A global variable can be used to pass values across pages for multipage apps. However, the value of a global variable is shared among all users. This can be inconvenient and dangerous. For example, you may want to allow users to set an API token key in one page and use the key in another page to query the API. 
+
+To address this, in Funix, a global variable is only shared among pages in the same browser session. You can test the simple example below. It is not decorated -- because you can start it using the lazy model, e.g., `funix -l test_session.py` if the code below is saved to a file `test_session.py`. 
 
 ```python
-from funix import funix
-
-
-user_word = "https://peps.python.org/pep-0339/"
-
-
-@funix(
-    session_variables=["user_word"],
-)
 def set_word(word: str) -> str:
     global user_word
     user_word = word
     return "Success"
 
-
-@funix(
-    session_variables=["user_word"],
-)
 def get_word() -> str:
     return user_word
 ```
 
-
+**Known bugs**: However, there are many cases that our simple ast.Global solution does not cover. If that happens, you can use two Funix functions to manually set and get a session-level global variable. 
 
 ```
-@funix()
+import funix 
+@funix.funix()
 def set_word(word: str) -> str:
-    set_global_variable("user_word", word)
+    funix.set_global_variable("user_word", word)
     return "Success"
 
 
-@funix()
+@funix.funix()
 def get_word() -> str:
-    return get_global_variable("user_word")
+    return funix.get_global_variable("user_word")
 ```
 
 ## Passing values across pages for multipage apps
 
+pre_fill
 
 ## Secret 
 
+Very often you wanna protect the access to your app. Funix offers a simple way to do that: generating a random token that needs to be attached to the URL in order to open the app in a browser. 
+
+To do so, just toggle the command line option `secret` when launching a Funix app. You can provide a token or let Funix generate one for you.
+
+```bash
+funix  my_app.py --secret  my_secret_token # use a token provided by you
+or 
+funix  my_app.py --secret  True # randomly generate a token
+```
+
+The token, denoted as `TOKEN` in the rest of this seciton,  will be printed on the Terminal. For example, 
+
+```bash
+$ funix hello.py --secret True
+Secrets:
+---------------
+Name: hello
+Secret: 8c9f55d0eb74adbb3c87a445ea0ae92f
+Link: http://127.0.0.1:3000/hello?secret=8c9f55d0eb74adbb3c87a445ea0ae92f
+```
+
+To access the app, you just append `?secret=TOKEN` in the app URL. In the example above, the URL to properly open the app is `http://127.0.0.1:3000/hello?secret=8c9f55d0eb74adbb3c87a445ea0ae92f`. Bad guys trying to access your app via `http://127.0.0.1:3000/hello` (no secrete in the URL) will not be able to run your app.
+
+However, if you are not a bad guy but just a forgetful person, you can still access your app without the token in the URL. Just click the "secret" button on the top right corner of the app, and enter the secret in a pop-up window, then you can use the app.
+
+![enter secret](./screenshots/secret.gif)
+
+> Note: This is not a strong way to protect your app. 
+
 ## Backend APIs
+
+TBD. 
 
 ## Command line options 
 
@@ -517,4 +608,4 @@ funix -g  http://github.com/funix/funix -r examples -R .
 
 funix -g  http://github.com/funix/funix -r examples  better.py  
 
-TODO: 
+TODO:  
