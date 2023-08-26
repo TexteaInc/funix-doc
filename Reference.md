@@ -331,10 +331,10 @@ typing.List[  # each row
 
 The per-cell dictionary must have one entry, whose
 
-* **key** specifies the widget type, which is a string "argument" (if the widget is an input/argument), "index" (if the widget is an output/return), "markdown", "html", or "divider".
+* **key** specifies the widget type, which is a string "argument" (if the widget is an input/argument), "return_index" (if the widget is an output/return), "markdown", "html", or "divider".
 * **value** is the content of the widget
   * If the widget type is "argument", then the value is the argument name as a `str`.
-  * If the widget type is "index", then the value is the index of the return value as an `int`.
+  * If the widget type is "return_index", then the value is the index of the return value as an `int`.
   * If the widget type is "markdown" or "html", then the value is a Markdown- or HTML-syntax string.
   * If the widget type is "divider", then the value is the text to be displayed on the divider. When the text is an empty string, then nothing is displayed.
 
@@ -365,9 +365,9 @@ import funix
     ],
     output_layout=[
         [{"divider": "zip code is "}],
-        [{"index": 2}],
+        [{"return_index": 2}],
         [{"divider": "from the town"}],
-        [{"index": [0, 1]}],
+        [{"return_index": [0, 1]}],
     ],
 )
 def layout_shipping(
