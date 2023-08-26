@@ -2,10 +2,9 @@
 
 [Funix](http://funix.io): the minimalist & non-intrusive way to build AI/Data web apps in Python
 
-
 * [An introductory video on YouTube](https://youtu.be/DVIV_EUFNbw)
 * [QuickStart Guide](QuickStart.md)
-* [The reference manual](https://www.notion.so/textea/Funix-Reference-Manual-452a8ce51bdf4c29b4650bed7df270f6)
+* [The reference manual](Reference.md)
 
 ## Team
 The Funix team at Textea consists of:
