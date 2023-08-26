@@ -1,4 +1,4 @@
-# QuickStart Guide of Funix 
+# QuickStart Guide of Funix
 
 Your Python function definition is your web app!
 
@@ -10,12 +10,13 @@ Your Python function definition is your web app!
 
 * Build web apps directly from your core logic in Python, without bothering with the front-end or web UI.
 * In **as few as two lines of code**, turn any Python function into a web app via Funix.
-* UI customization available in declarative fashion in JSON5 or YAML. Themes supported too. 
-* How: Funix automatically chooses I/O widgets for your web app by analyzing the type hint in your function's signature. 
-* Non-intrusive: you can still run your code locally. 
+* UI customization available in declarative fashion in JSON5 or YAML. Themes supported too.
+* How: Funix automatically chooses I/O widgets for your web app by analyzing the type hint in your function's signature.
+* Non-intrusive: you can still run your code locally.
 
 ## Acknowledgement
-We were inspired by FastAPI's approach of using type hints to build apps. We also want to thank Streamlit, Gradio, PyWebIO, and Pynecone for their influence on the development of Funix. Our backend is implemented using Flask, and the front-end primarily using Material UI. Lastly, Funix was made possible with the generous investment from Miracle Plus (formerly Y Combinator China) to Textea Inc. 
+
+We were inspired by FastAPI's approach of using type hints to build apps. We also want to thank Streamlit, Gradio, PyWebIO, and Pynecone for their influence on the development of Funix. Our backend is implemented using Flask, and the front-end primarily using Material UI. Lastly, Funix was made possible with the generous investment from Miracle Plus (formerly Y Combinator China) to Textea Inc.
 
 ## Installing Funix
 
@@ -29,7 +30,7 @@ or from Funix's GitHub repo
 pip install "git+https://github.com/TexteaInc/funix.git"
 ```
 
-## Hello, World! 
+## Hello, World
 
 Funix can turn any type-hinted Python into a web app, with the function's argument becoming the input widgets of the web app and the return becoming the output widgets.
 For example, suppose that a Python function below is saved in the file `hello.py`:
@@ -42,23 +43,23 @@ def hello(your_name: str) -> str:
 Run the command below at the terminal
 
 ```bash
-funix -l hello.py 
+funix -l hello.py
 ```
 
-And you get a web app at `http://localhost:80` automatically opened in a browser window. 
+And you get a web app at `http://localhost:80` automatically opened in a browser window.
 
-![](screenshots/hello.png)
+![hello](screenshots/hello.png)
 
-Voila! 
+Voila!
 
 > On Linux, you may need to run the above command with `sudo` to use port 80. Or, you can use a port that does not need the root privilege, such as 3000:  `funix hello.py -P 3000`. Then the web app will be launched at `http://localhost:3000`.
 
-## The Funix decorators 
+## The Funix decorators
 
 To customize your web app, you can use the decorator `@funix` in Python's syntax, or `@funix_yaml` and `@funix_json5` in YAML and JSON5 syntaxes respectively. You will see more examples below and in the [Reference Manual](./Reference.md).
 
+## Can Funix do AI? Of course
 
-## Can Funix do AI? Of course! 
 ```python
 from funix import funix
 from funix.hint import Image
@@ -73,29 +74,23 @@ def dalle(prompt: str = "a cat") -> Image:
 
 ![Dalle demo](./screenshots/dalle.jpg)
 
-
 ## Customizing UI made easy
 
-Although Funix chooses widgets automatically, you can easily customize them. For example, the code ([here](./examples/power_slider_radio.py)) below uses a slider, between 0 and 10 with a step of 1, for the integer input `x` and uses a radio button to select the string input `op`. 
-The return is a string but because its type is `funix.hint.Markdown`, it is rendered into rich text in the web app. 
-
-This example also leverages Funix's JSON5 support to facilitate declarative UI customization. 
-See more in the section [JSON5 and YAML support](#declarative-in-json5-and-yaml) below. 
+Although Funix chooses widgets automatically, you can easily customize them. For example, the code ([here](./examples/power_slider_radio.py)) below uses a slider, between 0 and 10 with a step of 1, for the integer input `x` and uses a radio button to select the string input `op`.
+The return is a string but because its type is `funix.hint.Markdown`, it is rendered into rich text in the web app.
 
 ```python
 import typing
 
 from funix.hint import Markdown
-from funix import funix_json5
-@funix_json5("""
-{
-    widgets: {
-        x: "slider[0,10,1]",
-        op: "radio" } , 
-}
-"""
-)
+from funix import funix
 
+@funix(
+    widgets={
+        "x": "slider[0,10,1]",
+        "op": "radio"
+    }
+)
 def power(x: int, op: typing.Literal["square", "cube"]) -> Markdown:
     if op =="square":
         return  f"\
@@ -111,27 +106,24 @@ def power(x: int, op: typing.Literal["square", "cube"]) -> Markdown:
 The corresponding web app looks like below:
 ![slider power example](./screenshots/power_slider_radio.png)
 
-
 ## Multi-modal and compound I/Os
 
 Funix can support more than singular I/Os such as integers or strings.
-The example below ([code here](./examples/slider_table_plot.py)) creates a table input and visualizes the two columns in a scatter plot. 
-In particular, the widget for variable `a` is a column of input boxes while that for the variable `b` is a column of sliders. 
+The example below ([code here](./examples/slider_table_plot.py)) creates a table input and visualizes the two columns in a scatter plot.
+In particular, the widget for variable `a` is a column of input boxes while that for the variable `b` is a column of sliders.
 
-
-```python 
-from typing import List 
+```python
+from typing import List
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
 @funix(
-        widgets={
-           "a": "sheet",
-           "b": ["sheet", "slider[0,1,0.01]"]
-        }
+    widgets={
+        "a": "sheet",
+        "b": ["sheet", "slider[0,1,0.01]"]
+    }
 )
-
-# below is a simple matplotlib function 
+# below is a simple matplotlib function
 def table_plot(a: List[int], b: List[float]) -> Figure:
     fig = plt.figure()
     plt.plot(a, b)
@@ -152,31 +144,31 @@ Funix supports themes to provide a consistent UI across your web apps. The examp
 
 ```python
 from funix import funix
-@funix(
-    theme = "https://raw.githubusercontent.com/TexteaInc/funix-doc/main/examples/sunset_v2.yaml"
-)
+
+
+@funix(theme="https://raw.githubusercontent.com/TexteaInc/funix-doc/main/examples/sunset_v3.json")
 def hello(your_name: str) -> str:
     return f"Hello, {your_name}."
 ```
 
-The corresponding web app looks like below, where the default blue theme is replaced with the yellow one.
+The corresponding web app looks like below:
 
 ![sunset theme](./screenshots/theme_sunset.png)
 
 ## Customizing layouts
 
-Two parameters are used for layout customization of the inputs and outputs respectively: `input_layout` and `output_layout`. 
-Funix uses a row-based layput system. 
-The input or output panel, a 2D list, is divided into rows, each of which is a list of dictionaries, each of which specifies a widget, where the keys are the properties of the widget. For more details, please refer to the Reference Manual. 
+Two parameters are used for layout customization of the inputs and outputs respectively: `input_layout` and `output_layout`.
+Funix uses a row-based layput system.
+The input or output panel, a 2D list, is divided into rows, each of which is a list of dictionaries, each of which specifies a widget, where the keys are the properties of the widget. For more details, please refer to the Reference Manual.
 
-Below is an example ([code here](./examples/layout.py)). In `input_layout`, four widgets, two HTML code pieces and two arguments of the function decorated `github_card` are laid out in the same row with their respective widths. The Funix-decorated function `github_card` has returns of three types: an image, a file URL, and a markdown string, which are properly rendered in the output panel. 
+Below is an example ([code here](./examples/layout.py)). In `input_layout`, four widgets, two HTML code pieces and two arguments of the function decorated `github_card` are laid out in the same row with their respective widths. The Funix-decorated function `github_card` has returns of three types: an image, a file URL, and a markdown string, which are properly rendered in the output panel.
 
 ```python
 from funix import funix
-from funix.hint import Images, Files, Markdown 
+from funix.hint import Image, File, Markdown
 
 @funix(
-    description="""Enter a Github repo's URL, 
+    description="""Enter a Github repo's URL,
     and create a card for the project""",
     input_layout=[
         [{"html": "https://github.com/", "width": 3.5},
@@ -193,8 +185,8 @@ from funix.hint import Images, Files, Markdown
          {"return": 2}] # row 3
     ]
 )
-def github_card(user_name: str="texteainc", 
-                repo_name: str="json-viewer") -> (Images, Files, Markdown):
+def github_card(user_name: str="texteainc",
+                repo_name: str="json-viewer") -> (Image, File, Markdown):
     url = f"https://github.com/{user_name}/{repo_name}"
     author = url.split("/")[3]
     name = url.split("/")[4]
@@ -203,18 +195,18 @@ def github_card(user_name: str="texteainc",
            f"[{url}]({url})"
 ```
 
-The corresponding web app looks like below: 
+The corresponding web app looks like below:
 
 ![layout demo screenshot](./screenshots/layout.png)
 
-## Declarative in JSON5 and YAML 
-Tired of the quotation marks and curly brakets? 
-Besides the Python-based decorator `@funix`, Funix provides two addtional decorators `@funix_yaml` and `@funix_json5` in the YAML and JSON5 syntaxes. 
+<!-- ## Declarative in JSON5 and YAML
+Tired of the quotation marks and curly brakets?
+Besides the Python-based decorator `@funix`, Funix provides two addtional decorators `@funix_yaml` and `@funix_json5` in the YAML and JSON5 syntaxes.
 
-[The `power` function example above](#customizing-ui-made-easy) uses the JSON5 style. The corresponding Python and YAML versions are given below. 
+[The `power` function example above](#customizing-ui-made-easy) uses the JSON5 style. The corresponding Python and YAML versions are given below.
 
 ```python
-## If decorating in Python's syntax, 
+## If decorating in Python's syntax,
 ## use the following:
 from funix import funix
 @funix(
@@ -222,7 +214,7 @@ from funix import funix
         "x": "slider[0,10,1]",
         "op": "radio" }
 )
-          
+
 ## If decorating in YAML syntax,
 ## use the following:
 from funix import funix_yaml
@@ -231,52 +223,54 @@ from funix import funix_yaml
         x: slider[0,10,1]
         op: radio
 """)
-```
+``` -->
 
 ## Customization per-attribute or per-IO
 
 In all examples above, the configurations are aggregated per-attribute. This might be inconvenient when one needs to see all customizations of the same function I/O, and thus its corresponding widget, in one place.
 Hence, Funix also supports per-IO customization.
 
-To do so, just use the parameter `per_IO_config`, of type `dict`, and put per-IO congifurations in it. For example, the `power` function above can be decorated in the per-IO fashion as follows, in YAML syntax:
+To do so, just use the parameter `per_IO_config`, of type `dict`, and put per-IO congifurations in it. For example, the `power` function above can be decorated in the per-IO fashion as follows:
 
 ```python
-from funix import funix_json5
-@funix_json5("""
-    argument_config": {
-        x": {"widgets": "slider[0,10,1]"},
-        op": {"widgets": "radio"}
+from funix import funix
+
+
+@funix(
+    argument_config: {
+        "x": {"widgets": "slider[0,10,1]"},
+        "op": {"widgets": "radio"}
     }
-""")
+)
 ```
 
 In comparison, this is the per-attribute version:
 
 ```python
-from funix import funix_json5
-@funix_json5("""
-{
-    widgets: {
-        x: "slider[0,10,1]",
-        op: "radio" } 
-    } 
-}g
-""")
+from funix import funix
+
+@funix(
+    widgets={
+        "x": "slider[0,10,1]",
+        "op": "radio"
+    }
+)
 ```
 
 ## Multiple functions in one Python script
 
 You can mix Funix-decorated functions and normal functions in one Python script.
-Only the decorated functions are converted to web apps. 
+Only the decorated functions are converted to web apps.
 In a case of multiple Funix-decorated functions, a function selector will be provided at the top the Funix-generated web app.
 
-For example, the following Python script [code here](./examples/multi_functions.py) contains two Funix-decorated functions, `foo` and `foobar`, and one normal function, `bar`. 
+For example, the following Python script [code here](./examples/multi_functions.py) contains two Funix-decorated functions, `foo` and `foobar`, and one normal function, `bar`.
 
 ```python
 from funix import funix
-@funix() 
+
+@funix()
 def foo(x: int) -> int:
-    return x + 1 
+    return x + 1
 
 # will NOT be converted to a web app
 def bar(x: int) -> int:
@@ -295,31 +289,29 @@ The two screenshots below show the responses when the `foo` and `foobar` functio
 ![foo](./screenshots/foo_multi_functions.png)
 ![foobar](./screenshots/foobar_multi_functions.png)
 
-## Non-intrusive 
+## Non-intrusive
 
-Funix is non-intrusive. You can run the Python script above, or call any function (Funix-decorated or not) in it,  on your terminal as usual. 
+Funix is non-intrusive. You can run the Python script above, or call any function (Funix-decorated or not) in it,  on your terminal as usual.
 
 ```bash
-$ python3 multi_functions.py 
+$ python3 multi_functions.py
 5
 $ python3 -c "from multi_functions import foo; print (foo(6))"
 7
 ```
 
-## Backend 
-Funix gives you both the frontend and the backend from the same piece of code. By default, the backend server is at `localhost:8080` and the endpoint for a function is at `/call/{your_function_name}`. For example, for the `foo` function we can POST to `localhost:8080/call/foo` and the result 7 is printed in the last line: 
+## Backend
+
+Funix gives you both the frontend and the backend from the same piece of code. By default, the backend server is at `localhost:8080` and the endpoint for a function is at `/call/{your_function_name}`. For example, for the `foo` function we can POST to `localhost:8080/call/foo` and the result 7 is printed in the last line:
 
 ```bash
 $ curl -X POST  \
        -H "Content-Type: application/json" \
        -d '{"x": 6}' \
        localhost:8080/call/foo
-7 
+7
 ```
-
-
 
 ## More
 
-For further details, please read our Reference Manual. 
-If you have questions, please open an issue on Github.
+For further details, please read our Reference Manual. If you have questions, please open an issue on Github.
