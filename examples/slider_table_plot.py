@@ -12,7 +12,10 @@ import funix
 )
 
 # A simple matplotlib function 
-def table_plot(a: List[int], b: List[float]) -> Figure:
+def table_plot(
+        a: List[int]=[5,17,29], 
+        b: List[float]=[3.1415, 2.6342, 1.98964]
+    ) -> Figure:
     fig = plt.figure()
     plt.plot(a, b)
     return fig

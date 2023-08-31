@@ -143,7 +143,7 @@ def square(x: int, y: float, z1: float, z2: float) -> float:
       def just_test(a: List[int], b: List[float]) -> dict:
         return {"a": a, "b": b}
     ```
-    ![Untitled](./screenshots/sheet_slider.png)
+    ![Sheet slider](./screenshots/sheet_slider.png)
 
 #### Funix's additional types
 Via the module `funix.widget.builtin`, Funix adds widgets to allow users to drag-and-drop MIME files as a web app's inputs. They will be converted into Python's `bytes` type. 
