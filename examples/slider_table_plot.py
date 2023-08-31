@@ -1,4 +1,4 @@
-from typing import List 
+from typing import List
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
@@ -6,8 +6,8 @@ import funix
 
 @funix.funix(
         widgets={
-           "a": "sheet",
-           "b": ["sheet", "slider[0,1,0.1]"]
+                "a": "sheet",
+                "b": ["sheet", "slider[0,1,0.1]"]
         }
 )
 

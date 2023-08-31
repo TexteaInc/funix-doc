@@ -1,7 +1,8 @@
 from funix import funix
-@funix() 
+
+@funix()
 def foo(x: int) -> int:
-    return x + 1 
+    return x + 1
 
 def bar(x: int) -> int:
     return x + 2
