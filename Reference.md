@@ -207,7 +207,7 @@ Besides controlling the type-to-widget mapping, a theme also controls other appe
 
 ### Defining a theme
 
-A theme defintion is a JSON dictionary of four parts: `name`, `widgets`, `props`, `typography`, and `palette`, like the example below:
+A theme definition is a JSON dictionary of four parts: `name`, `widgets`, `props`, `typography`, and `palette`, like the example below:
 
 ```jsonc
 {
@@ -286,11 +286,10 @@ funix.import_theme(
 ) # optional
 ```
 
-The example below define a theme on-the-fly and imports it (without aliasing it) for later use.
+The example below defines a theme on-the-fly and imports it (without aliasing it) for later use.
 
 ```python
 import funix
-
 
 theme_json = {
   # theme definition
@@ -300,7 +299,7 @@ theme_json = {
   }
 }
 
-funix.set_theme(theme_dict = theme_json)
+funix.import_theme(theme_dict = theme_json)
 ```
 
 ### Using a theme
@@ -311,17 +310,17 @@ A theme can be applied to all functions in one `.py` Python script from
 * a local file path
 * a theme name imported earlier
 
-using the `set_theme()` function.
-If you have multiple `set_theme()` calls, then the last one will overwrite all above ones.
+using the `set_default_theme()` function.
+If you have multiple `set_default_theme()` calls, then the last one will overwrite all above ones.
 
 ```python
 import funix
 
-funix.set_theme("https://raw.githubusercontent.com/TexteaInc/funix-doc/main/examples/sunset_v2.json") # from web URL
+funix.set_default_theme("https://raw.githubusercontent.com/TexteaInc/funix-doc/main/examples/sunset_v2.json") # from web URL
 
-funix.set_theme("../..//sunset_v2.json") # from local file
+funix.set_default_theme("../..//sunset_v2.json") # from local file
 
-funix.set_theme("my_favorite_theme") # from alias or name
+funix.set_default_theme("my_favorite_theme") # from alias or name
 ```
 
 Alternatively, a theme can be applied to a particular function, again, from a web URL, a local file path, or a theme name/alias:
@@ -348,7 +347,9 @@ def foo():
 
 Quite often, a web app has default or example values prefilled at widgets for convenience. Funix provides handy solutions to support them.
 
-Default values can be set using Python's built-in default value for keyword arguments.
+Default values can be set using Python's built-in default value for keyword arguments. 
+Then the default value will be pre-populated in the web interface automatically. 
+
 
 <!-- add example -->
 
