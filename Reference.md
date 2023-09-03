@@ -644,7 +644,7 @@ A comprehensive log can be toggled by clicking the clock icon at the top right c
 
 ![history comprehensive log](./screenshots/history_comprehensive_log.gif)
 
-## Multipage apps and sessions
+## Multipage apps and sessions/states
 
 Building a multipage app in Funix is easy: one function becomes one page and you can switch between pages using the function selector. Passing data between pages are done via global variables. Simply use the `global` keyword of Python.
 
