@@ -2,7 +2,7 @@
 
 This reference manual covers advanced features of Funix. If you are new to Funix, please read the [QuickStart Guide](QuickStart.md) first.
 
-## Operating Modes
+## Command line options 
 
 ### The lazy (easy) mode
 
@@ -58,6 +58,10 @@ funix -g http://github.com/funix/funix \    # the repo
       demo.py                               # a particular file
 ```
 
+### The debug mode
+Starting Funix with the flag `-d` will enable the debug mode which monitors source code changes and automatically re-generate the app. Known bugs: the watchdog we used monitors all `.py` files in the current folder, which will keep your CPU high. 
+
+
 ## Supported I/O types and widget customization
 
 The Zen of Funix is to choose widgets for function I/Os based on their types. This can be done via themes (which is cross-app/function) or per-variable. 
@@ -89,9 +93,16 @@ Here we list the supported input data types, and the widget names (`str`) that a
   * Examples:
 
     ```python
-    def square(x: range(0, 100, 10)) -> int:
-      return x * x
+    def input_types(
+        prompt: str, 
+        advanced_features: bool = False,
+        model: typing.Literal['GPT-3.5', 'GPT-4.0', 'Llama-2', 'Falcon-7B']= 'GPT-4.0',
+        max_token: range(100, 200, 20)=140,
+        )  -> str:      
+        return "This is a dummy function. It returns nothing. "
     ```
+
+    ![widgets for basic data types](./screenshots/input_widgets.png)
 
 #### Python built-in compound types
 
@@ -135,19 +146,37 @@ Here we list the supported input data types, and the widget names (`str`) that a
   
     ![Sheet slider](./screenshots/sheet_slider.png)
 
-#### Funix's additional types
+#### Funix's additional MIME types
 
-Via the module `funix.widget.builtin`, Funix adds widgets to allow users to drag-and-drop MIME files as a web app's inputs. They will be converted into Python's `bytes` type.
+Via the module `funix.hint`, Funix adds widgets to allow users to drag-and-drop MIME files as a web app's inputs. They will be converted into Python's `bytes` type. 
 
-* `funix.widget.builtin.BytesFile`
-  * Examples:
-    * [ChatPDF](https://github.com/forrestbao/ChatPaper), a web app using ChatGPT API to query information in a user-uploaded PDF file.
+There are four types: `BytesImage`, `BytesVideo`, `BytesAudio`, and `BytesFile`. They are all subclasses of Python's native [`bytes` type](https://docs.python.org/3/library/stdtypes.html#bytes). The difference is that `BytesImage`, `BytesVideo`, and `BytesAudio` will be rendered into image, video, and audio players, respectively, while `BytesFile` will be rendered into a file uploader. 
+
+* Examples:
+  * [ChatPaper](https://github.com/forrestbao/ChatPaper), a web app using ChatGPT API to query information in a user-uploaded PDF file.
+    ![ChatPaper](https://github.com/forrestbao/ChatPaper/raw/main/screenshot.png)
+  * RGB2Gray converter 
+    ```python
+    import  io # Python's native 
+
+    import PIL # the Python Image Library
+    import funix 
+
+    @funix.funix(
+        title="Convert color images to grayscale images",
+    )
+    def gray_it(image: funix.hint.BytesImage) -> funix.hint.Image:
+        img = PIL.Image.open(io.BytesIO(image))
+        gray = PIL.ImageOps.grayscale(img) 
+        output = io.BytesIO()
+        gray.save(output, format="PNG")
+        return output.getvalue()
+    ```
+    ![RGB2Gray](./screenshots/rgb2gray.png)
 
 #### Customizing the input widgets per-variable
 
-To customize the widget choice of an input, use the Funix decorator attribute `widgets`.
-
-The value provided to `widgets` must be a `Dict[str, str|List]`, where a key represents a variable name (a `str`) while a value is a Funix-supported widget name mentioned above (a `str`, e.g., `"slider"`), or optionally for a parametric widget, a list of a widget name (`str`) and a `Dict[str, str|int|float|bool]` dictionary (parameters and values), e.g., `["slider", {"min":0, "max":100, "step":2}]`.
+Although Funix does not recommand customizing the widgets per-variable (the preferred way is via themes), it is still possible to do so via the Funix decorator attribute `widgets`. The value provided to `widgets` must be a `Dict[str, str|List]`, where a key represents a variable name (a `str`) while a value is a Funix-supported widget name mentioned above (a `str`, e.g., `"slider"`), or optionally for a parametric widget, a list of a widget name (`str`) and a `Dict[str, str|int|float|bool]` dictionary (parameters and values), e.g., `["slider", {"min":0, "max":100, "step":2}]`.
 
 For example, the code below shows three syntaxes to associate four `int`/`float`-type variables to  sliders:
 
@@ -178,17 +207,43 @@ Funix supports the following output types.
 * `typing.List` and `list`: Displayed in either React-JSON-Viewer or MUIX DataGrid. There will be a radio box on the front end for the user to switch between the two display options at any time, and the JSON Viewer will be used by default.
 * `typing.TypedDict`, `typing.Dict`, `dict`: Displayed as ibid.
 
-#### Output types from popular scientific librarie 
+#### Output types from popular scientific libraries
 
 * `matplotlib.figure.Figure`: For interactively displaying matplotlib plots. Currently, only 2D figures of matplotlib are supported. Rendered as [Mpld3 Plot](https://mpld3.github.io/)
+* `jaxtyping`: The typing library for Numpy, PyTorch, and Tensorflow. Coming soon! 
+* Examples 
+  ```python
+  from typing import List 
+  import matplotlib.pyplot as plt
+  from matplotlib.figure import Figure
+  import random
 
-#### Additional MIME types supported via `funix.hint`.
+  import funix
+
+  @funix.funix(
+          widgets={
+            "a": "sheet",
+            "b": ["sheet", "slider"]
+          }
+  )
+  def table_plot(
+          a: List[int]=list(range(20)), 
+          b: List[float]=[random.random() for _ in range(20)]
+      ) -> Figure:
+      fig = plt.figure()
+      plt.plot(a, b)
+      return fig
+  ```
+  ![slider-sheet](./screenshots/table_plot.png)
+
+#### Additional output MIME types supported via `funix.hint`
 
 * `funix.hint.Markdown`: For rendering strings that are in Markdown syntax. It's okay if the type is simply `str` -- but you will lose the syntax rendering. Rendered into HTML via [React-Markdown](https://github.com/remarkjs/react-markdown)
 * `funix.hint.HTML`: For rendering strings that are in HTML syntax. It's okay if the type is simply `str` -- but you will lose the syntax rendering. Displayed into a `<div></div>` tag.
 * `funix.hint.Image`, `funix.hint.Video`, `funix.hint.Audio`, `funix.hint.File`: For rendering URLs (either a `str` or a `typing.List[str]`) into images, vidoes, audios, and file downloaders. The URL(s) is(are) either a local path (absolute or relative) or web URI links, e.g., at AWS S3.
-  * Examples
-
+* `funix.hint.Code`: For rendering a string as a code block. Rendered using [Monaco Editor for React](https://github.com/suren-atoyan/monaco-react). 
+* Examples
+  * Displaying a local still image 
     ```python
     import funix
 
@@ -196,7 +251,16 @@ Funix supports the following output types.
     def display_a_image() -> funix.hint.Image:
       return "./files/test.png"
     ```
-* `funix.hint.Code`: For rendering a string as a code block. Rendered using [Monaco Editor for React](https://github.com/suren-atoyan/monaco-react)
+  * DallE 
+    ```python
+    import funix 
+
+    @funix.funix()
+    def dalle(Prompt: str) -> funix.hint.Image:
+      response = openai.Image.create(prompt=Prompt)
+      return response["data"][0]["url"]
+    ```
+    ![DallE](./screenshots/dalle.jpg)
 
 ## Themes
 
@@ -358,19 +422,15 @@ There is no Python's built-in way to set example values. Funix provides a decora
 Example 1:
 
 ```python
-import typing
-from funix import funix
-
-
-@funix(
-  examples = {"arg2": [1, 5, 7]},
-  widgets  = {"arg1": "radio"}
+@funix.funix(
+    examples={"arg3": [1, 5, 7]}
 )
 def argument_selection(
-  arg1: typing.Literal["is", "is not"] = "is not",
-  arg2: str = "prime",
+    arg1: str = "prime",
+    arg2: typing.Literal["is", "is not"]="is",
+    arg3: int = 3,
 ) -> str:
-  return f"The number {arg1} {arg2} {arg3}."
+    return f"The number {arg3} {arg2} {arg1}."
 
 ```
 
@@ -403,7 +463,7 @@ def ChatGPT_single_turn(
 
 ## Naming your app or widgets
 
-To help users understand your app or widgets, you can explain them using the decorator attributes `description` and `argument_labels` respectively. The value provided to `description` is a Markdown-syntax string. The value provided to `argument_labels` is of the type `Dict[str, str]` where the key is an argument name and the value is a Markdown-syntax string.
+To help users understand your app or widgets, you can explain them using the decorator attributes `title`, `description` and `argument_labels` respectively. The value provided to `title` or `description` is a Markdown-syntax string. The `title` will appear in the top banner as well as the right navigation bar. The value provided to `argument_labels` is of the type `Dict[str, str]` where the key is an argument name and the value is a Markdown-syntax string.
 
 Example 1:
 
@@ -411,6 +471,7 @@ Example 1:
 import funix
 
 @funix.funix(
+  title="BMI Calculator",
   description = "**Calculate** _your_ BMI",
   argument_labels = {
     "weight": "Weight (kg)",
@@ -459,7 +520,7 @@ def foo_left(x:int) -> str:
     return f"{x} appears to the left"
 ```
 
-A more advanced example is our ChatGPT multiturn app where `direction = "column-reverse"` so the message you type stays at the bottom. The source code can be found in `examples/AI/chatGPT_multi_turn.py`. Here is the screenshot:
+A more advanced example is our ChatGPT multiturn app where `direction = "column-reverse"` so the message you type stays at the bottom. The source code can be found in `$FUNIX_ROOT/examples/AI/chatGPT_multi_turn.py`. Here is the screenshot:
 
 ![ChatGPT multiturn](./screenshots/chatGPT_multiturn.png)
 
@@ -485,7 +546,7 @@ The per-cell dictionary must have one entry, whose
   * If the widget type is "markdown" or "html", then the value is a Markdown- or HTML-syntax string.
   * If the widget type is "divider", then the value is the text to be displayed on the divider. When the text is an empty string, then nothing is displayed.
 
-Optionally, the per-cell dictionary can contain an entry of the string key `width` and the value being an integer. The value specifies the number of columns, as defined in [MUI's Grid](https://mui.com/material-ui/react-grid/), the cell occupies. The default value is 1.
+Optionally, the per-cell dictionary can contain an entry of the string key `width` and the value being a `float`. The value specifies the number of columns, as defined in [MUI's Grid](https://mui.com/material-ui/react-grid/), the cell occupies. The default value is 1.
 
 Note that widgets not covered in `input_layout` or `output_layout` will be displayed in the default order and after those covered in `input_layout` and `output_layout`.
 
@@ -525,7 +586,7 @@ def layout_shipping(
 
 ![Layout sender](screenshot/../screenshots/layout_sender.png)
 
-**Example 2: Using EasyPost API**: Source code: `examples/layout_easypost_shipping.py`
+**Example 2: Using EasyPost API**: Source code: `$FUNIX_ROOT/examples/layout_easypost_shipping.py`
 
 ![Layout shipping](./screenshots/easypost_shipping.png)
 
@@ -648,19 +709,65 @@ A comprehensive log can be toggled by clicking the clock icon at the top right c
 
 Building a multipage app in Funix is easy: one function becomes one page and you can switch between pages using the function selector. Passing data between pages are done via global variables. Simply use the `global` keyword of Python.
 
-```python
-user_word = ""
+Examples: 
+* A simple global variable-based state management
+  ```python
+  import funix 
 
-def set_word(word: str) -> str:
-  global user_word
-  user_word = word
-  return "Success"
+  y = "The default value of y."
 
-def get_word() -> str:
-  return user_word
+  @funix.funix(  )
+  def set_y(x: str="123") -> str:
+      global y
+      y = x 
+      return "Y has been changed. Now check it in the get_y() page."
+
+
+  @funix.funix( )
+  def get_y() -> str:
+      return y 
+  ```
+
+  ![multipage app via global variables](./screenshots/multipage_global.gif)
+ 
+### Sessions
+
+We have seen how to use a global variable to pass values between pages. However, the value of a global variable is shared among all users. This can be dangerous. For example, an API token key is a global variable set in one page and used in the other. Then once a user sets the API token key in the former page, all other users can it freely in the latter page though they may not be able to see the token value.
+
+To avoid this situation, we need to sessionize each browser's connection to a Funix app. To do so, add the `-t` option when launching the `funix` command, e.g.,
+
+```bash
+funix session_simple.py -t
 ```
 
-![multipage app via global variables](./screenshots/multipage_global.gif)
+The video/GIF below shows that in the private and non-private modes of a browser (thus two separate sessions), the global variable `y` in the code above has different values. Changing the value of `y` in one window won't change its value in another window. 
+
+![sessioned global y](./screenshots/session.gif)
+
+A more practical example is in `$FUNIX_ROOT/examples/AI/openAI_minimal.py` where openAI key is sessionized for users to talk to OpenAI endpoints using their individual API keys. 
+
+
+**Known bugs**: However, there are many cases that our simple AST-based solution does not cover. If sessions are not properly maintained, you can use two Funix functions to manually set and get a session-level global variable.
+
+```python
+from funix import funix
+from funix.session import get_global_variable, set_global_variable, set_default_global_variable
+
+
+set_default_global_variable("user_word", "Whereof one cannot speak, thereof one must be silent")
+
+
+@funix()
+def set_word(word: str) -> str:
+    set_global_variable("user_word", word)
+    return "Success"
+
+
+@funix()
+def get_word() -> str:
+    return get_global_variable("user_word")
+```
+
 
 ### Linking pages together via `prefilling`
 
@@ -710,36 +817,6 @@ The value can be of three cases:
 2. a tuple of a callable and an index, if the callable returns a sequence -- in this case, the return of the callable that match the index is sent to the corresponding argument of the function being prefilled.
 3. a tuple of a callable and a `str`, if the callable returns a dictionary -- in this case, the return of the callable and of the key is sent to the corresponding argument of the function being prefilled.
 
-### Sessions
-
-Funix uses global variables to pass values across pages for multipage apps. However, the value of a global variable is shared among all users. This can be  dangerous. For example, an API token key is a global variable set in one page and used in the other. Then once a user sets the API token key in the former page, all other users can it freely in the latter page though they may not be able to see the token value.
-
-To avoid this situation, we need to sessionize each browser's connection to a Funix app. To do so, add the `-t` option when launching the `funix` command, e.g.,
-
-```bash
-funix openAI_demo.py -t
-```
-
-**Known bugs**: However, there are many cases that our simple AST-based solution does not cover. If sessions are not properly maintained, you can use two Funix functions to manually set and get a session-level global variable.
-
-```python
-from funix import funix
-from funix.session import get_global_variable, set_global_variable, set_default_global_variable
-
-
-set_default_global_variable("user_word", "Whereof one cannot speak, thereof one must be silent")
-
-
-@funix()
-def set_word(word: str) -> str:
-    set_global_variable("user_word", word)
-    return "Success"
-
-
-@funix()
-def get_word() -> str:
-    return get_global_variable("user_word")
-```
 
 ## Secret
 
