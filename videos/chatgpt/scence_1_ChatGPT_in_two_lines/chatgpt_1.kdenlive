@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<mlt LC_NUMERIC="C" producer="main_bin" version="7.4.0" root="/home/forrest/repos/funix-doc/videos/chatgpt/scence_1_ChatGPT_in_two_lines">
+<mlt LC_NUMERIC="C" producer="main_bin" version="7.4.0" root="/home/forrest/repos/Funix/funix-doc/videos/chatgpt/scence_1_ChatGPT_in_two_lines">
  <profile frame_rate_num="25" sample_aspect_num="1" display_aspect_den="5" colorspace="709" progressive="1" description="2560x1600 25.00fps" display_aspect_num="8" frame_rate_den="1" width="2560" height="1600" sample_aspect_den="1"/>
  <producer id="producer0" in="00:00:00.000" out="00:00:04.960">
   <property name="length">00:00:05.000</property>
@@ -13,36 +13,6 @@
   <property name="kdenlive:id">2</property>
   <property name="kdenlive:file_hash">039b56a692cd66eefeea44a17539e5a2</property>
   <property name="mlt_image_format">rgb</property>
- </producer>
- <producer id="producer1" in="00:00:00.000" out="00:00:04.960">
-  <property name="length">125</property>
-  <property name="eof">pause</property>
-  <property name="resource"/>
-  <property name="progressive">1</property>
-  <property name="aspect_ratio">1</property>
-  <property name="seekable">1</property>
-  <property name="mlt_service">kdenlivetitle</property>
-  <property name="kdenlive:duration">125</property>
-  <property name="kdenlive:clipname">Bring ChatGP...</property>
-  <property name="xmldata">&lt;kdenlivetitle duration="125" LC_NUMERIC="C" width="2560" height="1600" out="124">
- &lt;item type="QGraphicsTextItem" z-index="0">
-  &lt;position x="386" y="646">
-   &lt;transform>1,0,0,0,1,0,0,0,1&lt;/transform>
-  &lt;/position>
-  &lt;content line-spacing="0" shadow="0;#64000000;3;3;3" font-underline="0" box-height="308" font="FreeSans" letter-spacing="0" font-pixel-size="140" font-italic="0" typewriter="1;1;1;0;0" alignment="4" font-weight="75" box-width="1787.84" font-color="0,0,0,255">Bring ChatGPT to the web 
-in two lines.&lt;/content>
- &lt;/item>
- &lt;startviewport rect="0,0,2560,1600"/>
- &lt;endviewport rect="0,0,2560,1600"/>
- &lt;background color="0,0,0,0"/>
-&lt;/kdenlivetitle>
-</property>
-  <property name="kdenlive:folderid">-1</property>
-  <property name="kdenlive:id">3</property>
-  <property name="kdenlive:file_hash">0406b937f55f720a8999c158f6983585</property>
-  <property name="force_reload">0</property>
-  <property name="meta.media.width">2560</property>
-  <property name="meta.media.height">1600</property>
  </producer>
  <producer id="producer2" in="00:00:00.000" out="00:00:12.200">
   <property name="length">00:00:12.240</property>
@@ -58,12 +28,12 @@ in two lines.&lt;/content>
   <property name="kdenlive:clipname"/>
   <property name="kdenlive:duration">00:00:05.000</property>
   <property name="kdenlive:folderid">-1</property>
-  <property name="kdenlive:id">4</property>
+  <property name="kdenlive:id">3</property>
   <property name="kdenlive:file_size">142169</property>
   <property name="kdenlive:file_hash">56b062ca0e4aee49ac9c361e0ef1457f</property>
  </producer>
- <producer id="producer3" in="00:00:00.000" out="00:00:04.960">
-  <property name="length">00:00:05.000</property>
+ <producer id="producer3" in="00:00:00.000" out="00:00:06.200">
+  <property name="length">156</property>
   <property name="eof">pause</property>
   <property name="resource">0_plain.png</property>
   <property name="ttl">25</property>
@@ -76,7 +46,7 @@ in two lines.&lt;/content>
   <property name="kdenlive:clipname"/>
   <property name="kdenlive:duration">00:00:05.000</property>
   <property name="kdenlive:folderid">-1</property>
-  <property name="kdenlive:id">5</property>
+  <property name="kdenlive:id">4</property>
   <property name="kdenlive:file_size">131484</property>
   <property name="kdenlive:file_hash">d6184204ef025e6b71a5630e7f35a8e2</property>
  </producer>
@@ -124,7 +94,7 @@ in two lines.&lt;/content>
   <property name="meta.media.width">1628</property>
   <property name="meta.media.height">1032</property>
   <property name="meta.media.color_range">mpeg</property>
-  <property name="kdenlive:id">6</property>
+  <property name="kdenlive:id">5</property>
   <property name="kdenlive:file_size">426804</property>
   <property name="kdenlive:file_hash">775abf500453e0a4c3856d675e00e465</property>
   <property name="meta.media.top_field_first">0</property>
@@ -142,7 +112,7 @@ in two lines.&lt;/content>
   <property name="aspect_ratio">1</property>
   <property name="kdenlive:clipname"/>
   <property name="kdenlive:folderid">-1</property>
-  <property name="kdenlive:id">7</property>
+  <property name="kdenlive:id">6</property>
   <property name="kdenlive:file_size">197475</property>
   <property name="kdenlive:file_hash">cfb6718d7d25b06eac68ba034e07907d</property>
   <property name="meta.media.nb_streams">1</property>
@@ -180,6 +150,39 @@ in two lines.&lt;/content>
   <property name="meta.media.top_field_first">0</property>
   <property name="meta.media.progressive">1</property>
  </producer>
+ <producer id="producer1" in="00:00:00.000" out="00:00:04.960">
+  <property name="length">125</property>
+  <property name="eof">pause</property>
+  <property name="resource"/>
+  <property name="progressive">1</property>
+  <property name="aspect_ratio">1</property>
+  <property name="seekable">1</property>
+  <property name="mlt_service">kdenlivetitle</property>
+  <property name="kdenlive:duration">125</property>
+  <property name="kdenlive:clipname">Bring ChatGP...</property>
+  <property name="xmldata">&lt;kdenlivetitle duration="125" LC_NUMERIC="C" width="2560" height="1600" out="124">
+ &lt;item type="QGraphicsTextItem" z-index="0">
+  &lt;position x="507" y="464">
+   &lt;transform>1,0,0,0,1,0,0,0,1&lt;/transform>
+  &lt;/position>
+  &lt;content line-spacing="0" shadow="0;#64000000;3;3;3" font-underline="0" box-height="770" font="FreeSans" letter-spacing="0" font-pixel-size="140" font-italic="0" typewriter="0;2;1;0;0" alignment="4" font-weight="63" box-width="1556" font-color="0,0,0,255">Turn ChatGPT API to 
+a web app in no effort. 
+
+
+(Except one command)&lt;/content>
+ &lt;/item>
+ &lt;startviewport rect="0,0,2560,1600"/>
+ &lt;endviewport rect="0,0,2560,1600"/>
+ &lt;background color="0,0,0,0"/>
+&lt;/kdenlivetitle>
+</property>
+  <property name="kdenlive:folderid">-1</property>
+  <property name="kdenlive:id">7</property>
+  <property name="kdenlive:file_hash">cefe8ba5389e26a11788dc399ddcc936</property>
+  <property name="force_reload">0</property>
+  <property name="meta.media.width">2560</property>
+  <property name="meta.media.height">1600</property>
+ </producer>
  <playlist id="main_bin">
   <property name="kdenlive:docproperties.activeTrack">3</property>
   <property name="kdenlive:docproperties.audioChannels">2</property>
@@ -196,7 +199,7 @@ in two lines.&lt;/content>
 ]
 </property>
   <property name="kdenlive:docproperties.kdenliveversion">21.12.3</property>
-  <property name="kdenlive:docproperties.position">268</property>
+  <property name="kdenlive:docproperties.position">170</property>
   <property name="kdenlive:docproperties.previewextension"/>
   <property name="kdenlive:docproperties.previewparameters"/>
   <property name="kdenlive:docproperties.profile">/home/forrest/.local/share/kdenlive/profiles/customprofile0</property>
@@ -225,28 +228,28 @@ in two lines.&lt;/content>
   <property name="kdenlive:docproperties.rendertcoverlay">0</property>
   <property name="kdenlive:docproperties.rendertctype">0</property>
   <property name="kdenlive:docproperties.rendertwopass">0</property>
-  <property name="kdenlive:docproperties.renderurl">chatgpt_1_no_title.mp4</property>
+  <property name="kdenlive:docproperties.renderurl">chatgpt_1.mp4</property>
   <property name="kdenlive:docproperties.renderzone">1</property>
   <property name="kdenlive:docproperties.scrollPos">0</property>
   <property name="kdenlive:docproperties.seekOffset">30000</property>
   <property name="kdenlive:docproperties.storagefolder">/1678475757674</property>
   <property name="kdenlive:docproperties.version">1.04</property>
   <property name="kdenlive:docproperties.verticalzoom">1</property>
-  <property name="kdenlive:docproperties.videoTarget">-1</property>
-  <property name="kdenlive:docproperties.zonein">62</property>
-  <property name="kdenlive:docproperties.zoneout">270</property>
+  <property name="kdenlive:docproperties.videoTarget">2</property>
+  <property name="kdenlive:docproperties.zonein">0</property>
+  <property name="kdenlive:docproperties.zoneout">218</property>
   <property name="kdenlive:docproperties.zoom">4</property>
   <property name="kdenlive:expandedFolders"/>
   <property name="kdenlive:documentnotes"/>
   <property name="xml_retain">1</property>
   <entry producer="producer0" in="00:00:00.000" out="00:00:04.960"/>
-  <entry producer="producer1" in="00:00:00.000" out="00:00:04.960"/>
   <entry producer="producer2" in="00:00:00.000" out="00:00:12.200"/>
-  <entry producer="producer3" in="00:00:00.000" out="00:00:04.960"/>
+  <entry producer="producer3" in="00:00:00.000" out="00:00:06.200"/>
   <entry producer="producer4" in="00:00:00.000" out="00:00:12.200"/>
   <entry producer="producer5" in="00:00:00.000" out="00:00:03.800"/>
+  <entry producer="producer1" in="00:00:00.000" out="00:00:04.960"/>
  </playlist>
- <producer id="black_track" in="00:00:00.000" out="00:20:10.800">
+ <producer id="black_track" in="00:00:00.000" out="00:20:08.720">
   <property name="length">2147483647</property>
   <property name="eof">continue</property>
   <property name="resource">black</property>
@@ -337,7 +340,7 @@ in two lines.&lt;/content>
   <property name="aspect_ratio">1</property>
   <property name="kdenlive:clipname"/>
   <property name="kdenlive:folderid">-1</property>
-  <property name="kdenlive:id">6</property>
+  <property name="kdenlive:id">5</property>
   <property name="kdenlive:file_size">426804</property>
   <property name="kdenlive:file_hash">775abf500453e0a4c3856d675e00e465</property>
   <property name="xml">was here</property>
@@ -379,22 +382,21 @@ in two lines.&lt;/content>
   <property name="set.test_image">0</property>
  </producer>
  <playlist id="playlist4">
-  <entry producer="producer0" in="00:00:00.000" out="00:00:02.440">
+  <entry producer="producer0" in="00:00:00.000" out="00:00:03.280">
    <property name="kdenlive:id">2</property>
   </entry>
-  <blank length="00:00:02.920"/>
   <entry producer="producer6" in="00:00:00.960" out="00:00:03.400">
-   <property name="kdenlive:id">6</property>
+   <property name="kdenlive:id">5</property>
   </entry>
   <entry producer="producer6" in="00:00:04.080" out="00:00:05.160">
-   <property name="kdenlive:id">6</property>
+   <property name="kdenlive:id">5</property>
   </entry>
   <entry producer="producer6" in="00:00:09.880" out="00:00:11.640">
-   <property name="kdenlive:id">6</property>
+   <property name="kdenlive:id">5</property>
   </entry>
  </playlist>
  <playlist id="playlist5"/>
- <tractor id="tractor2" in="00:00:00.000" out="00:00:10.760">
+ <tractor id="tractor2" in="00:00:00.000" out="00:00:08.680">
   <property name="kdenlive:trackheight">69</property>
   <property name="kdenlive:timeline_active">1</property>
   <property name="kdenlive:collapsed">0</property>
@@ -405,34 +407,24 @@ in two lines.&lt;/content>
  </tractor>
  <playlist id="playlist6">
   <entry producer="producer1" in="00:00:00.000" out="00:00:02.440">
-   <property name="kdenlive:id">3</property>
+   <property name="kdenlive:id">7</property>
   </entry>
-  <entry producer="producer3" in="00:00:00.000" out="00:00:01.880">
-   <property name="kdenlive:id">5</property>
-  </entry>
-  <blank length="00:00:01.040"/>
-  <entry producer="producer2" in="00:00:00.000" out="00:00:05.280">
+  <entry producer="producer3" in="00:00:00.000" out="00:00:06.200">
    <property name="kdenlive:id">4</property>
-   <property name="kdenlive:activeeffect">0</property>
    <filter id="filter6">
     <property name="rotate_center">1</property>
     <property name="mlt_service">qtblend</property>
     <property name="kdenlive_id">qtblend</property>
-    <property name="rect">00:00:00.000=0 0 2560 1600 1.000000;00:00:01.080=17 647 1792 1120 1.000000;00:00:03.960=17 647 1792 1120 1.000000;00:00:04.000=20 807 1280 800 1.000000</property>
-    <property name="rotation">00:00:00.000=0;00:00:01.080=0;00:00:03.960=0;00:00:04.000=0</property>
+    <property name="rect">00:00:00.000=0 0 2560 1600 1.000000;00:00:00.960=0 0 2560 1600 1.000000;00:00:02.400=36 884 1280 800 1.000000</property>
+    <property name="rotation">00:00:00.000=0;00:00:00.960=0;00:00:02.400=0</property>
     <property name="compositing">0</property>
     <property name="distort">0</property>
     <property name="kdenlive:collapsed">0</property>
    </filter>
   </entry>
  </playlist>
- <playlist id="playlist7">
-  <blank length="00:00:03.400"/>
-  <entry producer="producer2" in="00:00:00.000" out="00:00:02.000">
-   <property name="kdenlive:id">4</property>
-  </entry>
- </playlist>
- <tractor id="tractor3" in="00:00:00.000" out="00:00:10.720">
+ <playlist id="playlist7"/>
+ <tractor id="tractor3" in="00:00:00.000" out="00:00:08.680">
   <property name="kdenlive:trackheight">69</property>
   <property name="kdenlive:timeline_active">1</property>
   <property name="kdenlive:collapsed">0</property>
@@ -440,18 +432,6 @@ in two lines.&lt;/content>
   <property name="kdenlive:audio_rec"/>
   <track hide="audio" producer="playlist6"/>
   <track hide="audio" producer="playlist7"/>
-  <transition id="transition0" in="00:00:03.400" out="00:00:04.400">
-   <property name="a_track">0</property>
-   <property name="b_track">1</property>
-   <property name="factory">loader</property>
-   <property name="resource"/>
-   <property name="mlt_service">luma</property>
-   <property name="kdenlive_id">luma</property>
-   <property name="kdenlive:mixcut">12</property>
-   <property name="softness">0</property>
-   <property name="alpha_over">1</property>
-   <property name="reverse">0</property>
-  </transition>
  </tractor>
  <playlist id="playlist8"/>
  <playlist id="playlist9"/>
@@ -465,14 +445,14 @@ in two lines.&lt;/content>
   <track hide="audio" producer="playlist8"/>
   <track hide="audio" producer="playlist9"/>
  </tractor>
- <tractor id="tractor5" in="00:00:00.000" out="00:20:10.800">
+ <tractor id="tractor5" in="00:00:00.000" out="00:20:08.720">
   <track producer="black_track"/>
   <track producer="tractor0"/>
   <track producer="tractor1"/>
   <track producer="tractor2"/>
   <track producer="tractor3"/>
   <track producer="tractor4"/>
-  <transition id="transition1">
+  <transition id="transition0">
    <property name="a_track">0</property>
    <property name="b_track">1</property>
    <property name="mlt_service">mix</property>
@@ -482,7 +462,7 @@ in two lines.&lt;/content>
    <property name="accepts_blanks">1</property>
    <property name="sum">1</property>
   </transition>
-  <transition id="transition2">
+  <transition id="transition1">
    <property name="a_track">0</property>
    <property name="b_track">2</property>
    <property name="mlt_service">mix</property>
@@ -492,7 +472,7 @@ in two lines.&lt;/content>
    <property name="accepts_blanks">1</property>
    <property name="sum">1</property>
   </transition>
-  <transition id="transition3">
+  <transition id="transition2">
    <property name="a_track">0</property>
    <property name="b_track">3</property>
    <property name="version">0.9</property>
@@ -501,7 +481,7 @@ in two lines.&lt;/content>
    <property name="internal_added">237</property>
    <property name="always_active">1</property>
   </transition>
-  <transition id="transition4">
+  <transition id="transition3">
    <property name="a_track">0</property>
    <property name="b_track">4</property>
    <property name="version">0.9</property>
@@ -510,7 +490,7 @@ in two lines.&lt;/content>
    <property name="internal_added">237</property>
    <property name="always_active">1</property>
   </transition>
-  <transition id="transition5">
+  <transition id="transition4">
    <property name="a_track">0</property>
    <property name="b_track">5</property>
    <property name="version">0.9</property>
