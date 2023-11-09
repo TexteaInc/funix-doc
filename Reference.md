@@ -2,7 +2,7 @@
 
 This reference manual covers advanced features of Funix. If you are new to Funix, please read the [QuickStart Guide](QuickStart.md) first.
 
-## Command line options 
+## Command line options
 
 ### The lazy (easy) mode
 
@@ -30,7 +30,7 @@ def square(x: int) -> int:
     return x * x
 ```
 
-then you have to use the normal mode to apply the customization. The Shell command is as simply as: 
+then you have to use the normal mode to apply the customization. The Shell command is as simply as:
 
 ```bash
 funix my_app.py
@@ -41,7 +41,7 @@ funix my_app.py
 Funix can convert all `.py` files recursively from a local path to apps, e.g.,
 
 ```sh
-funix -R ./demos # ./demos is a folder and -R stands for recursive
+funix ./demos # ./demos is a folder, funix will handle all .py files under it
 ```
 
 ### The Git mode
@@ -51,7 +51,7 @@ To make life more convenient, Funix can directly convert functions in a Git repo
 ```sh
 funix -g http://github.com/funix/funix \    # the repo
       -r examples \                         # the folder under the repo
-      -R .                                  # recursively
+      ./                                    # recursively
 
 funix -g http://github.com/funix/funix \    # the repo
       -r examples \                         # the folder under the repo
@@ -59,22 +59,22 @@ funix -g http://github.com/funix/funix \    # the repo
 ```
 
 ### The debug mode
-Starting Funix with the flag `-d` will enable the debug mode which monitors source code changes and automatically re-generate the app. Known bugs: the watchdog we used monitors all `.py` files in the current folder, which will keep your CPU high. 
+Starting Funix with the flag `-d` will enable the debug mode which monitors source code changes and automatically re-generate the app. Known bugs: the watchdog we used monitors all `.py` files in the current folder, which will keep your CPU high.
 
 
 ## Supported I/O types and widget customization
 
-The Zen of Funix is to choose widgets for function I/Os based on their types. This can be done via themes (which is cross-app/function) or per-variable. 
-Only the data types supported by Funix can be properly rendered into widgets. 
+The Zen of Funix is to choose widgets for function I/Os based on their types. This can be done via themes (which is cross-app/function) or per-variable.
+Only the data types supported by Funix can be properly rendered into widgets.
 Funix supports certain Python's built-in data types and those from common scientific libraries, such as `Figure` of `matplotlib`.
 
 > Funix does NOT recommend customizing the widgets per-variable. This is a major difference between Funix and other Python-based app building frameworks. Funix believes this should be done via themes, to consistently create UIs across apps. Read the [themes](#themes) section for more details. If you really want to manually pick UI components for a variable, please see [Customizing the input widgets per-variable](#customizing-the-input-widgets-per-variable).
 
 ### Input types and their widgets
 
-Here we list the supported input data types, and the widget names (`str`) that a theme or a per-variable customization directive can use to map the type/variable to a specific UI widget. 
+Here we list the supported input data types, and the widget names (`str`) that a theme or a per-variable customization directive can use to map the type/variable to a specific UI widget.
 
-#### Python built-in basic types 
+#### Python built-in basic types
 
 * `int` and `float`
   * allowed widget names:
@@ -82,8 +82,9 @@ Here we list the supported input data types, and the widget names (`str`) that a
     * `slider`: a slider. You can optionally set the arguments `start`, `end`, and `step` using a function call syntax `slider[start, end, step]` or `["slider", {"min":min, "max":max, "step":step}]` -- in the latter case, not all three parameters need to be customized. For integers, the default values are `start=0`, `end=100`, and `step=1`. For floats, the default values are `start=0`, `end=1`, and `step=0.1`. The UI component is [MUI's Slider](https://mui.com/components/slider/).
 * `str`
   * allowed widget names:
-    * `input` (default): a text input box. Only oneline. The UI component is [MUI's TextField](https://mui.com/material-ui/react-text-field).
-    * `textarea`: Multiline text input with line breaks. The UI component is [MUI's TextField with multiline support](https://mui.com/material-ui/react-text-field/#multiline).
+    * `textarea` (default): Multiline text input with line breaks. The UI component is [MUI's TextField with multiline support](https://mui.com/material-ui/react-text-field/#multiline).
+    * `input`: a text input box. Only oneline. The UI component is [MUI's TextField](https://mui.com/material-ui/react-text-field).
+    * `password`: a text input box with password mask. The UI component is [MUI's TextField](https://mui.com/material-ui/react-text-field).
 * `bool`
   * allowed widget names:
     * `checkbox` (default): a checkbox. The UI component is [MUI's Checkbox](https://mui.com/components/checkboxes/).
@@ -94,11 +95,11 @@ Here we list the supported input data types, and the widget names (`str`) that a
 
     ```python
     def input_types(
-        prompt: str, 
+        prompt: str,
         advanced_features: bool = False,
         model: typing.Literal['GPT-3.5', 'GPT-4.0', 'Llama-2', 'Falcon-7B']= 'GPT-4.0',
         max_token: range(100, 200, 20)=140,
-        )  -> str:      
+        )  -> str:
         return "This is a dummy function. It returns nothing. "
     ```
 
@@ -127,7 +128,7 @@ Here we list the supported input data types, and the widget names (`str`) that a
     * `radio` (default): a radio button group. The UI is [MUI's Radio](https://mui.com/components/radio-buttons/).
     * `select`: a dropdown menu. The UI is [MUI's Select](https://mui.com/components/selects/).
 * Examples
-  * Example 1: 
+  * Example 1:
 
     ```python
       import funix
@@ -143,36 +144,45 @@ Here we list the supported input data types, and the widget names (`str`) that a
       def just_test(a: List[int], b: List[float]) -> dict:
         return {"a": a, "b": b}
     ```
-  
+
     ![Sheet slider](./screenshots/sheet_slider.png)
 
 #### Funix's additional MIME types
 
-Via the module `funix.hint`, Funix adds widgets to allow users to drag-and-drop MIME files as a web app's inputs. They will be converted into Python's `bytes` type. 
+Via the module `funix.hint`, Funix adds widgets to allow users to drag-and-drop MIME files as a web app's inputs. They will be converted into Python's `bytes` type.
 
-There are four types: `BytesImage`, `BytesVideo`, `BytesAudio`, and `BytesFile`. They are all subclasses of Python's native [`bytes` type](https://docs.python.org/3/library/stdtypes.html#bytes). The difference is that `BytesImage`, `BytesVideo`, and `BytesAudio` will be rendered into image, video, and audio players, respectively, while `BytesFile` will be rendered into a file uploader. 
+There are four types: `BytesImage`, `BytesVideo`, `BytesAudio`, and `BytesFile`. They are all subclasses of Python's native [`bytes` type](https://docs.python.org/3/library/stdtypes.html#bytes). The difference is that `BytesImage`, `BytesVideo`, and `BytesAudio` will be rendered into image, video, and audio players, respectively, while `BytesFile` will be rendered into a file uploader.
 
 * Examples:
   * [ChatPaper](https://github.com/forrestbao/ChatPaper), a web app using ChatGPT API to query information in a user-uploaded PDF file.
     ![ChatPaper](https://github.com/forrestbao/ChatPaper/raw/main/screenshot.png)
-  * RGB2Gray converter 
+  * RGB2Gray converter
     ```python
-    import  io # Python's native 
+    import  io # Python's native
 
     import PIL # the Python Image Library
-    import funix 
+    import funix
 
     @funix.funix(
         title="Convert color images to grayscale images",
     )
     def gray_it(image: funix.hint.BytesImage) -> funix.hint.Image:
         img = PIL.Image.open(io.BytesIO(image))
-        gray = PIL.ImageOps.grayscale(img) 
+        gray = PIL.ImageOps.grayscale(img)
         output = io.BytesIO()
         gray.save(output, format="PNG")
         return output.getvalue()
     ```
     ![RGB2Gray](./screenshots/rgb2gray.png)
+
+#### Funix's additional types for scientific libraries
+
+* `ipywidgets.password`: inputbox with password mask. The UI is [MUI's TextField](https://mui.com/material-ui/react-text-field).
+* `ipython`
+  * `ipython.display.Image`: image. Same as `BytesImage` above.
+  * `ipython.display.Video`: video. Same as `BytesVideo` above.
+  * `ipython.display.Audio`: audio. Same as `BytesAudio` above.
+* `pandera` custom data frame schema: The UI is [MUIX DataGrid](https://mui.com/x/react-data-grid/).
 
 #### Customizing the input widgets per-variable
 
@@ -210,10 +220,14 @@ Funix supports the following output types.
 #### Output types from popular scientific libraries
 
 * `matplotlib.figure.Figure`: For interactively displaying matplotlib plots. Currently, only 2D figures of matplotlib are supported. Rendered as [Mpld3 Plot](https://mpld3.github.io/)
-* `jaxtyping`: The typing library for Numpy, PyTorch, and Tensorflow. Coming soon! 
-* Examples 
+* `jaxtyping`: The typing library for Numpy, PyTorch, and Tensorflow. Coming soon!
+* `ipython`
+  * `ipython.display.Markdown`: Markdown syntax. The UI is [React-Markdown](https://github.com/remarkjs/react-markdown) for output.
+  * `ipython.display.HTML`: HTML syntax.
+  * `ipython.display.Image`, `ipython.display.Video`, `ipython.display.Audio`: For displaying images, videos, and audios. The URL(s) is(are) either a local path (absolute or relative) or web URI links, e.g., at AWS S3.
+* Examples
   ```python
-  from typing import List 
+  from typing import List
   import matplotlib.pyplot as plt
   from matplotlib.figure import Figure
   import random
@@ -227,7 +241,7 @@ Funix supports the following output types.
           }
   )
   def table_plot(
-          a: List[int]=list(range(20)), 
+          a: List[int]=list(range(20)),
           b: List[float]=[random.random() for _ in range(20)]
       ) -> Figure:
       fig = plt.figure()
@@ -241,9 +255,9 @@ Funix supports the following output types.
 * `funix.hint.Markdown`: For rendering strings that are in Markdown syntax. It's okay if the type is simply `str` -- but you will lose the syntax rendering. Rendered into HTML via [React-Markdown](https://github.com/remarkjs/react-markdown)
 * `funix.hint.HTML`: For rendering strings that are in HTML syntax. It's okay if the type is simply `str` -- but you will lose the syntax rendering. Displayed into a `<div></div>` tag.
 * `funix.hint.Image`, `funix.hint.Video`, `funix.hint.Audio`, `funix.hint.File`: For rendering URLs (either a `str` or a `typing.List[str]`) into images, vidoes, audios, and file downloaders. The URL(s) is(are) either a local path (absolute or relative) or web URI links, e.g., at AWS S3.
-* `funix.hint.Code`: For rendering a string as a code block. Rendered using [Monaco Editor for React](https://github.com/suren-atoyan/monaco-react). 
+* `funix.hint.Code`: For rendering a string as a code block. Rendered using [Monaco Editor for React](https://github.com/suren-atoyan/monaco-react).
 * Examples
-  * Displaying a local still image 
+  * Displaying a local still image
     ```python
     import funix
 
@@ -251,9 +265,9 @@ Funix supports the following output types.
     def display_a_image() -> funix.hint.Image:
       return "./files/test.png"
     ```
-  * DallE 
+  * DallE
     ```python
-    import funix 
+    import funix
 
     @funix.funix()
     def dalle(Prompt: str) -> funix.hint.Image:
@@ -411,8 +425,8 @@ def foo():
 
 Quite often, a web app has default or example values prefilled at widgets for convenience. Funix provides handy solutions to support them.
 
-Default values can be set using Python's built-in default value for keyword arguments. 
-Then the default value will be pre-populated in the web interface automatically. 
+Default values can be set using Python's built-in default value for keyword arguments.
+Then the default value will be pre-populated in the web interface automatically.
 
 
 <!-- add example -->
@@ -709,27 +723,27 @@ A comprehensive log can be toggled by clicking the clock icon at the top right c
 
 Building a multipage app in Funix is easy: one function becomes one page and you can switch between pages using the function selector. Passing data between pages are done via global variables. Simply use the `global` keyword of Python.
 
-Examples: 
+Examples:
 * A simple global variable-based state management
   ```python
-  import funix 
+  import funix
 
   y = "The default value of y."
 
   @funix.funix(  )
   def set_y(x: str="123") -> str:
       global y
-      y = x 
+      y = x
       return "Y has been changed. Now check it in the get_y() page."
 
 
   @funix.funix( )
   def get_y() -> str:
-      return y 
+      return y
   ```
 
   ![multipage app via global variables](./screenshots/multipage_global.gif)
- 
+
 ### Sessions
 
 We have seen how to use a global variable to pass values between pages. However, the value of a global variable is shared among all users. This can be dangerous. For example, an API token key is a global variable set in one page and used in the other. Then once a user sets the API token key in the former page, all other users can it freely in the latter page though they may not be able to see the token value.
@@ -740,11 +754,11 @@ To avoid this situation, we need to sessionize each browser's connection to a Fu
 funix session_simple.py -t
 ```
 
-The video/GIF below shows that in the private and non-private modes of a browser (thus two separate sessions), the global variable `y` in the code above has different values. Changing the value of `y` in one window won't change its value in another window. 
+The video/GIF below shows that in the private and non-private modes of a browser (thus two separate sessions), the global variable `y` in the code above has different values. Changing the value of `y` in one window won't change its value in another window.
 
 ![sessioned global y](./screenshots/session.gif)
 
-A more practical example is in `$FUNIX_ROOT/examples/AI/openAI_minimal.py` where openAI key is sessionized for users to talk to OpenAI endpoints using their individual API keys. 
+A more practical example is in `$FUNIX_ROOT/examples/AI/openAI_minimal.py` where openAI key is sessionized for users to talk to OpenAI endpoints using their individual API keys.
 
 
 **Known bugs**: However, there are many cases that our simple AST-based solution does not cover. If sessions are not properly maintained, you can use two Funix functions to manually set and get a session-level global variable.

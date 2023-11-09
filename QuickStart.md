@@ -56,7 +56,7 @@ Voila!
 
 ## The Funix decorators
 
-To customize your web app, you can use the decorator `@funix` in Python's syntax, or `@funix_yaml` and `@funix_json5` in YAML and JSON5 syntaxes respectively. You will see more examples below and in the [Reference Manual](./Reference.md).
+To customize your web app, you can use the decorator `@funix` in Python's syntax.  You will see more examples below and in the [Reference Manual](./Reference.md).
 
 ## Can Funix do AI? Of course
 
@@ -237,7 +237,7 @@ from funix import funix
 
 
 @funix(
-    argument_config: {
+    argument_config={
         "x": {"widgets": "slider[0,10,1]"},
         "op": {"widgets": "radio"}
     }
