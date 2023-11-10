@@ -831,6 +831,48 @@ The value can be of three cases:
 2. a tuple of a callable and an index, if the callable returns a sequence -- in this case, the return of the callable that match the index is sent to the corresponding argument of the function being prefilled.
 3. a tuple of a callable and a `str`, if the callable returns a dictionary -- in this case, the return of the callable and of the key is sent to the corresponding argument of the function being prefilled.
 
+## Rate Limit
+
+Some APIs may be expensive (e.g. ChatGPT), and if they are not rate-limited, you may have a large deficit on your credit card.
+
+Funix provides an easy way to apply the rate limit.
+
+![Rate limit exceeded](./screenshots/rate-limit.png)
+
+```python
+# For easy configuration, you can pass a dict
+
+# 10 requests per browser per minute
+@funix(rate_limit={"per_browser":10})
+def per_browser():
+  pass
+
+# Or limit based on IP:
+@funix(rate_limit={"per_ip":100})
+def per_ip():
+  pass
+
+# based on both IP and browser:
+@funix(
+  rate_limit={
+    "per_ip": 100,
+    "per_browser": 10
+  }
+)
+def per_browser_and_ip():
+  pass
+
+# If you want to set a custom period, pass a list of dict
+@funix(
+    rate_limit=[
+        # 1 request per day per browser
+        {"per_browser": 1, "period": 60 * 60 * 24},
+        {"per_ip": 20},
+    ],
+)
+def custom_period():
+  pass
+```
 
 ## Secret
 
