@@ -59,8 +59,33 @@ funix -g http://github.com/funix/funix \    # the repo
 ```
 
 ### The debug mode
+
 Starting Funix with the flag `-d` will enable the debug mode which monitors source code changes and automatically re-generate the app. Known bugs: the watchdog we used monitors all `.py` files in the current folder, which will keep your CPU high.
 
+### The default mode
+
+When you have multiple functions, but you want to specify which one to be the default one, so that it will be displayed when the app is loaded, you can use the flag `-D` to specify the default function, for example:
+
+```bash
+# Only for 1 file:
+funix -D my_default_function my_app.py
+
+# For multiple files:
+funix -D "hello.py:hello_world" -R examples
+```
+
+But you can also use the `funix.funix` decorator to specify the default function, for example:
+
+```python
+from funix import funix
+
+
+@funix(
+  default=True
+)
+def my_default_function():
+  pass
+```
 
 ## Supported I/O types and widget customization
 
@@ -873,6 +898,135 @@ def per_browser_and_ip():
 def custom_period():
   pass
 ```
+
+## Stream mode
+
+Some functions may take a long time to run, and you may want to see the intermediate results as they are generated. Funix provides a stream mode to support this. You can use `yield` to return intermediate results. The return value of the function is the final result.
+
+Or you want to implement some functions that can be refreshed in time, such as chat or real-time text generation, here is an example of ChatGPT:
+
+```python
+from funix import funix
+from funix.hint import Markdown
+
+from openai import OpenAI
+
+
+@funix()
+def chatGPT(prompt: str) -> Markdown:
+    client = OpenAI(api_key="xxx")
+    stream = client.chat.completions.create(
+        messages=[{"role": "user", "content": prompt}],
+        model="gpt-3.5-turbo",
+        stream=True,
+    )
+    message = []
+    for part in stream:
+        message.append(part.choices[0].delta.content or "")
+        yield "".join(message)
+```
+
+You don't need turn on the stream mode manually, Funix will detect the `yield` statement and turn on the stream mode automatically.
+
+### Print to web
+
+It's okay to use `print` for just printing something to the web. Funix will capture the stdout and display it in the output panel. But you need turn on the `print_to_web` mode in decorator manually.
+
+```python
+from funix import funix
+
+@funix(print_to_web=True)
+def print_to_web():
+    print("Hello world!")
+```
+
+It will force the function to run in the stream mode, and **don't care about your return annotations**. Funix will force the return type to `Markdown`, and the return value will be the appended to the output panel.
+
+## Class
+
+> [!IMPORTANT]
+> Funix may not be able to read your class source code correctly. Please ensure that your class code is indented normally. It is best not to have multi-line text without indentation that "destroys" the indentation function. It would break the current simple class code getter, which only gets the source code based on indentation.
+
+We can also use class to define a Funix app. It's good for stateful apps and some people don't like global variables. Just use the `funix.funix_class` decorator.
+
+```python
+from funix import funix_class
+
+
+class A:
+  def __init__(self, value: int = 0):
+    self.value = value
+
+  def add(self, x: int) -> int:
+    self.value += x
+    return self.value
+
+
+@funix_class()
+A(1)
+```
+
+If you want user can construct the class by themselves, you can do like this:
+
+```python
+from funix import funix_class
+
+
+@funix_class()
+class A:
+  def __init__(self, value: int = 0):
+    self.value = value
+
+  def add(self, x: int) -> int:
+    self.value += x
+    return self.value
+```
+
+For classes that have been built, funix will treat them as classes shared by all users. For classes that need to be built manually, funix will record a separate class for each user.
+
+### Method with config
+
+You can use `funix.funix_method` decorator like `funix` to configure methods in a class. Funix will read the config from the `funix_method` decorator and apply it to the method.
+
+```python
+from funix import funix_class, funix_method
+
+
+@funix_class()
+class A:
+  @funix_method(title="Create a new A instance")
+  def __init__(self, value: int = 0):
+    self.value = value
+
+  def add(self, x: int) -> int:
+    self.value += x
+    return self.value
+```
+
+### Disable some methods
+
+Although you can add `__` prefix to the method name to "hide" it, it's not a good way to disable a method in funix. Funix provides a better way to do this. Just use `disable` argument in `funix_method` decorator.
+
+```python
+from funix import funix_class, funix_method
+
+
+@funix_class()
+class A:
+  @funix_method(title="Create a new A instance")
+  def __init__(self, value: int = 0):
+    self.value = value
+
+  def add(self, x: int) -> int:
+    self.value += x
+    return self.value
+
+  @funix_method(disable=True)
+  def need_private_but_i_do_not_want_to_add_underscore(self):
+    pass
+```
+
+Funix will skip the method with `disable=True` in the class.
 
 ## Secret
 
